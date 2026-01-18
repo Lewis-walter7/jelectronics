@@ -48,7 +48,7 @@ export default function ShippingStep({ onBack, onNext }: ShippingStepProps) {
                 <p className={styles.subtitle}>Enter your delivery details</p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 350px', gap: '2rem' }}>
+            <div className={styles.shippingLayout}>
                 {/* Left Column: Form */}
                 <form id="checkoutForm" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

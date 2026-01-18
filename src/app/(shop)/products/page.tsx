@@ -80,28 +80,30 @@ async function getProducts(params: SearchParams) {
     }));
 }
 
+import styles from './products.module.css';
+
 export default async function ProductsValidPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const resolvedParams = await searchParams;
     const products = await getProducts(resolvedParams);
 
     return (
-        <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-            <h1 style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 'bold' }}>
+        <div className={`container ${styles.pageContainer}`}>
+            <h1 className={styles.header}>
                 {resolvedParams.search ? `Results for "${resolvedParams.search}"` : 'All Products'}
             </h1>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: '2rem', alignItems: 'start' }}>
+            <div className={styles.layoutGrid}>
                 {/* Sidebar */}
-                <aside style={{ position: 'sticky', top: '2rem' }}>
+                <aside className={styles.sidebar}>
                     <ProductFilters />
                 </aside>
 
                 {/* Main Content */}
-                <main>
+                <main className={styles.mainContent}>
                     {products.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '4rem 0', color: '#888' }}>
-                            <p style={{ fontSize: '1.2rem' }}>No products match your filters.</p>
-                            <a href="/products" style={{ display: 'inline-block', marginTop: '1rem', color: '#ff6b00', textDecoration: 'underline' }}>Clear all filters</a>
+                        <div className={styles.noResults}>
+                            <p className={styles.noResultsText}>No products match your filters.</p>
+                            <a href="/products" className={styles.clearFilters}>Clear all filters</a>
                         </div>
                     ) : (
                         <div className="products-grid-wrapper">
@@ -110,20 +112,6 @@ export default async function ProductsValidPage({ searchParams }: { searchParams
                     )}
                 </main>
             </div>
-
-            {/* Mobile responsiveness note: CSS Grid will need media query in global css or inline override for mobile to stack */}
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                @media (max-width: 768px) {
-                    div[style*="gridTemplateColumns: 250px 1fr"] {
-                        grid-template-columns: 1fr !important;
-                    }
-                    aside {
-                        position: static !important;
-                        margin-bottom: 2rem;
-                    }
-                }
-            `}} />
         </div>
     );
 }
