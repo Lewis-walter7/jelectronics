@@ -1,5 +1,6 @@
 import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
+import ProductList from '@/components/product/ProductList';
 
 async function getProductsByCategory(category: string) {
     await connectToDatabase();
