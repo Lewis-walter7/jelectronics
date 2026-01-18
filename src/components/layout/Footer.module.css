@@ -1,0 +1,111 @@
+.footer {
+    background: #0a0a0a;
+    /* Darker background for footer */
+    padding: 3rem 0 1rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: auto;
+    font-size: 0.95rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    /* Responsive columns */
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.col h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.col li {
+    margin-bottom: 0.8rem;
+}
+
+.link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    display: block;
+}
+
+.link:hover {
+    color: var(--color-primary);
+    padding-left: 5px;
+    /* Slight movement on hover */
+}
+
+/* Info columns like support/payment/location */
+.infoItem {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    color: var(--color-text-muted);
+    align-items: flex-start;
+}
+
+.icon {
+    font-size: 1.2rem;
+    min-width: 24px;
+    color: var(--color-primary);
+}
+
+.paymentMethods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.payTag {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bottomBar {
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.bottomLinks {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.copyright {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+    }
+
+    .bottomBar {
+        flex-direction: column;
+        text-align: center;
+    }
+}

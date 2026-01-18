@@ -1,0 +1,81 @@
+.container {
+    padding-top: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.stepsContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.stepsContainer::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+    transform: translateY(-50%);
+}
+
+.stepWrapper {
+    position: relative;
+    z-index: 1;
+    background: var(--color-background);
+    /* Mask the line behind */
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stepCircle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-surface);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    transition: all 0.3s ease;
+}
+
+.stepLabel {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+/* Active Step */
+.stepWrapper.active .stepCircle {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 0 15px var(--color-primary-glow);
+}
+
+.stepWrapper.active .stepLabel {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* Completed Step (Simpler look for previous steps) */
+.stepWrapper.completed .stepCircle {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}

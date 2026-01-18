@@ -1,0 +1,132 @@
+.emptyState {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.emptyState p {
+    color: #888;
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+}
+
+.browseBtn {
+    background: #ff6b00;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.browseBtn:hover {
+    background: #e65100;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #333;
+}
+
+.imageWrapper {
+    height: 250px;
+    position: relative;
+    background: #000;
+}
+
+.image {
+    object-fit: contain;
+    padding: 1rem;
+}
+
+.content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.title:hover {
+    color: #ff6b00;
+}
+
+.price {
+    color: #0ea5e9;
+    /* Blue accent matching compare checks */
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.actions {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.cartBtn {
+    flex: 1;
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.cartBtn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+.removeBtn {
+    width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid #333;
+    color: #666;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.removeBtn:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+}

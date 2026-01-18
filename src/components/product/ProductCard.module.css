@@ -1,0 +1,125 @@
+/* Existing styles... */
+
+.card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border-color: #333;
+}
+
+.imageWrapper {
+    height: 250px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+    /* Removed padding */
+    position: relative;
+    border-bottom: 1px solid #222;
+    /* Optional: adds separation if image has white background */
+}
+
+/* Ensure image scales nicely within the transparent box */
+.imageWrapper img {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .imageWrapper img {
+    transform: scale(1.05);
+}
+
+.content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.category {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.title:hover {
+    color: #ff6b00;
+}
+
+/* Features Preview */
+.featuresPreview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1rem;
+}
+
+.featureTag {
+    font-size: 0.75rem;
+    color: #ccc;
+    background: #222;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-top: auto;
+    /* Push to bottom if content varies */
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.currency {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #888;
+}
+
+.addToCartBtn,
+.addButton {
+    width: 100%;
+    padding: 10px;
+    background: #ff6b00;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.addToCartBtn:hover,
+.addButton:hover {
+    background: #e65100;
+}

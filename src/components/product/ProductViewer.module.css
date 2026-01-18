@@ -1,0 +1,130 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.priceSection {
+    margin-bottom: var(--spacing-sm);
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    transition: color 0.3s ease;
+}
+
+.oldPrice {
+    text-decoration: line-through;
+    color: var(--color-text-muted);
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+.saleTag {
+    background: var(--color-error);
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 1rem;
+}
+
+.optionSection {
+    margin-bottom: var(--spacing-md);
+}
+
+.optionLabel {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.optionGroup {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.variantBtn {
+    padding: 10px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-main);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.variantBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.variantBtn.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: white;
+    box-shadow: 0 4px 12px var(--color-primary-glow);
+}
+
+.qtySection {
+    margin-bottom: var(--spacing-md);
+}
+
+.qtyControl {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    padding: 4px;
+}
+
+.qtyBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.qtyBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.qtyValue {
+    width: 40px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.addToCartBtn {
+    width: 100%;
+    background: white;
+    color: black;
+    border: none;
+    padding: 16px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.addToCartBtn:hover {
+    transform: translateY(-2px);
+}

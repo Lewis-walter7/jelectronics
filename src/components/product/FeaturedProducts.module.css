@@ -1,0 +1,16 @@
+.section {
+    padding: var(--spacing-lg) 0;
+}
+
+.heading {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-main);
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-md);
+}
