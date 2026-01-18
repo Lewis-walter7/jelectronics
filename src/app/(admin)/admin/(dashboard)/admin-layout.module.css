@@ -1,0 +1,137 @@
+/* Main Container */
+.container {
+    display: flex;
+    min-height: 100vh;
+    background: #0a0a0a;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: #111;
+    border-right: 1px solid #222;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.link {
+    color: #ccc;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    display: block;
+    font-size: 0.95rem;
+}
+
+.link:hover {
+    background: #222;
+    color: white;
+}
+
+.footer {
+    margin-top: auto;
+    border-top: 1px solid #333;
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Main Content */
+.mainContent {
+    flex: 1;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease;
+}
+
+/* Mobile Header */
+.mobileHeader {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #111;
+    border-bottom: 1px solid #222;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.hamburgerBtn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+/* Overlay for Mobile Sidebar */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 45;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        /* Stack header and content */
+    }
+
+    .mainContent {
+        margin-left: 0;
+        width: 100%;
+        padding-top: 0;
+        /* Header is sticky handled by flex or sticky */
+    }
+
+    .mobileHeader {
+        display: flex;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}

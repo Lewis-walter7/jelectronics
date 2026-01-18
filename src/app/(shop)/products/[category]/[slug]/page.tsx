@@ -109,21 +109,17 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
             </div>
 
             {displayProduct.specifications && Object.keys(displayProduct.specifications).length > 0 && (
-                <section className="container" style={{ marginTop: '4rem', marginBottom: '2rem' }}>
-                    <h2 style={{ fontSize: '1.8rem', marginBottom: '1.5rem', textAlign: 'left', borderBottom: '1px solid #333', paddingBottom: '1rem' }}>
+                <section className={`container ${styles.specsSection}`}>
+                    <h2 className={styles.specsTitle}>
                         Technical Specifications
                     </h2>
-                    <div style={{ background: '#111', borderRadius: '12px', padding: '2rem', border: '1px solid #222' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', maxWidth: '1000px' }}>
-                            <tbody>
-                                {Object.entries(displayProduct.specifications).map(([key, value], index) => (
-                                    <tr key={key} style={{ borderBottom: '1px solid #222' }}>
-                                        <td style={{ padding: '16px 0', color: '#888', width: '30%', minWidth: '200px', verticalAlign: 'top', fontWeight: '500' }}>{key}</td>
-                                        <td style={{ padding: '16px 0', color: '#e0e0e0', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{value as string}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className={styles.specsContainer}>
+                        {Object.entries(displayProduct.specifications).map(([key, value]) => (
+                            <div key={key} className={styles.specRow}>
+                                <div className={styles.specLabel}>{key}</div>
+                                <div className={styles.specValue}>{value as string}</div>
+                            </div>
+                        ))}
                     </div>
                 </section>
             )}

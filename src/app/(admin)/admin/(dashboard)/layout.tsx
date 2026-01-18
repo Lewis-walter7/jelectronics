@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import styles from './admin-layout.module.css';
 
 export default function DashboardLayout({
     children,
@@ -9,6 +11,7 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const router = useRouter();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -21,38 +24,32 @@ export default function DashboardLayout({
     };
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#0a0a0a' }}>
+        <div className={styles.container}>
+            {/* Mobile Sidebar Overlay */}
+            <div
+                className={`${styles.overlay} ${isSidebarOpen ? styles.visible : ''}`}
+                onClick={() => setIsSidebarOpen(false)}
+            />
+
             {/* Sidebar */}
-            <aside style={{
-                width: '250px',
-                background: '#111',
-                borderRight: '1px solid #222',
-                padding: '1.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2rem',
-                position: 'fixed',
-                height: '100vh',
-                left: 0,
-                top: 0
-            }}>
-                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }}>
+            <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}>
+                <div className={styles.logo}>
                     JElectronics <span style={{ color: '#ff6b00', fontSize: '0.8rem' }}>Admin</span>
                 </div>
 
-                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <Link href="/admin/dashboard" style={linkStyle}>📊 Dashboard</Link>
-                    <Link href="/admin/products" style={linkStyle}>📦 Products</Link>
-                    <button disabled style={{ ...linkStyle, background: 'transparent', cursor: 'not-allowed', opacity: 0.5, textAlign: 'left', border: 'none' }}>🚚 Orders (Soon)</button>
+                <nav className={styles.nav}>
+                    <Link href="/admin/dashboard" className={styles.link} onClick={() => setIsSidebarOpen(false)}>📊 Dashboard</Link>
+                    <Link href="/admin/products" className={styles.link} onClick={() => setIsSidebarOpen(false)}>📦 Products</Link>
+                    <button disabled className={styles.link} style={{ opacity: 0.5, cursor: 'not-allowed', textAlign: 'left', border: 'none', background: 'transparent' }}>🚚 Orders (Soon)</button>
 
-                    <div style={{ marginTop: 'auto', borderTop: '1px solid #333', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <Link href="/" style={{ ...linkStyle, fontSize: '0.85rem', color: '#888' }}>
+                    <div className={styles.footer}>
+                        <Link href="/" className={styles.link} style={{ fontSize: '0.85rem', color: '#888' }}>
                             ↪ Back to Shop
                         </Link>
                         <button
                             onClick={handleLogout}
+                            className={styles.link}
                             style={{
-                                ...linkStyle,
                                 background: 'transparent',
                                 border: 'none',
                                 color: '#f44336',
@@ -70,20 +67,22 @@ export default function DashboardLayout({
                 </nav>
             </aside>
 
-            {/* Main Content Area - Pushed right to accommodate fixed sidebar */}
-            <main style={{ flex: 1, marginLeft: '250px', width: 'calc(100% - 250px)' }}>
+            {/* Main Content Area */}
+            <main className={styles.mainContent}>
+                {/* Mobile Header */}
+                <header className={styles.mobileHeader}>
+                    <button
+                        className={styles.hamburgerBtn}
+                        onClick={() => setIsSidebarOpen(true)}
+                    >
+                        ☰
+                    </button>
+                    <span className={styles.logo}>JElectronics Admin</span>
+                    <div style={{ width: '32px' }}></div> {/* Spacer for alignment */}
+                </header>
+
                 {children}
             </main>
         </div>
     );
 }
-
-const linkStyle = {
-    color: '#ccc',
-    textDecoration: 'none',
-    padding: '10px 12px',
-    borderRadius: '6px',
-    transition: 'background 0.2s',
-    display: 'block',
-    fontSize: '0.95rem'
-};

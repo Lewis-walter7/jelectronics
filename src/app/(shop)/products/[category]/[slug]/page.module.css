@@ -119,9 +119,89 @@
     font-size: 0.9rem;
 }
 
+/* Specs Section */
+.specsSection {
+    margin-top: 4rem;
+    margin-bottom: 2rem;
+}
+
+.specsTitle {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+    color: white;
+}
+
+.specsContainer {
+    background: #111;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #222;
+    max-width: 1000px;
+}
+
+.specRow {
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    border-bottom: 1px solid #222;
+    padding: 1rem 0;
+}
+
+.specRow:last-child {
+    border-bottom: none;
+}
+
+.specLabel {
+    color: #888;
+    font-weight: 500;
+}
+
+.specValue {
+    color: #e0e0e0;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
 @media (max-width: 768px) {
     .wrapper {
         grid-template-columns: 1fr;
         gap: var(--spacing-md);
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    /* Mobile Specs - Refined UI */
+    .specsContainer {
+        padding: 0;
+        background: transparent;
+        border: none;
+    }
+
+    .specRow {
+        grid-template-columns: 1fr;
+        /* Stack vertically */
+        gap: 0.25rem;
+        background: #111;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 8px;
+        border: 1px solid #222;
+    }
+
+    .specLabel {
+        font-size: 0.75rem;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .specValue {
+        font-size: 0.95rem;
+        color: #fff;
     }
 }

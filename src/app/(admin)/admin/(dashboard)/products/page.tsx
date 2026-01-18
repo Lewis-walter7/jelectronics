@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import styles from './products.module.css';
 
 interface Product {
     _id: string;
@@ -73,119 +74,73 @@ export default function AdminProductsPage() {
     };
 
     return (
-        <div style={{ padding: '2rem', color: 'white' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                    <h1 style={{ fontSize: '1.8rem', margin: 0 }}>Products</h1>
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <div className={styles.leftSection}>
+                    <h1 className={styles.title}>Products</h1>
 
                     {/* Tabs */}
-                    <div style={{ display: 'flex', background: '#111', padding: '4px', borderRadius: '8px', border: '1px solid #333' }}>
+                    <div className={styles.tabs}>
                         <button
                             onClick={() => setActiveTab('published')}
-                            style={{
-                                padding: '6px 16px',
-                                borderRadius: '6px',
-                                border: 'none',
-                                cursor: 'pointer',
-                                background: activeTab === 'published' ? '#333' : 'transparent',
-                                color: activeTab === 'published' ? 'white' : '#888',
-                                fontWeight: activeTab === 'published' ? 'bold' : 'normal',
-                                fontSize: '0.9rem'
-                            }}
+                            className={`${styles.tabBtn} ${activeTab === 'published' ? styles.tabBtnActive : styles.tabBtnInactive}`}
                         >
                             Published
                         </button>
                         <button
                             onClick={() => setActiveTab('draft')}
-                            style={{
-                                padding: '6px 16px',
-                                borderRadius: '6px',
-                                border: 'none',
-                                cursor: 'pointer',
-                                background: activeTab === 'draft' ? '#333' : 'transparent',
-                                color: activeTab === 'draft' ? '#ff6b00' : '#888',
-                                fontWeight: activeTab === 'draft' ? 'bold' : 'normal',
-                                fontSize: '0.9rem'
-                            }}
+                            className={`${styles.tabBtn} ${activeTab === 'draft' ? styles.draftActive : styles.tabBtnInactive}`}
                         >
                             Drafts
                         </button>
                     </div>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div className={styles.actions}>
                     <button
                         onClick={fetchProducts}
                         disabled={loading}
-                        style={{
-                            background: '#333',
-                            color: 'white',
-                            border: '1px solid #444',
-                            padding: '10px 16px',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            fontWeight: 'bold',
-                            transition: 'all 0.2s'
-                        }}
+                        className={styles.refreshBtn}
                         title="Reload Inventory"
                     >
                         {loading ? '↻' : '↻ Refresh'}
                     </button>
                     <Link href="/admin/products/new">
-                        <button style={{
-                            background: '#ff6b00',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontWeight: 'bold'
-                        }}>
+                        <button className={styles.addBtn}>
                             + Add Product
                         </button>
                     </Link>
                 </div>
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div className={styles.searchContainer}>
                 <input
                     type="text"
                     placeholder="Search by name or category..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                        padding: '10px 16px',
-                        width: '100%',
-                        maxWidth: '400px',
-                        background: '#111',
-                        border: '1px solid #333',
-                        borderRadius: '6px',
-                        color: 'white'
-                    }}
+                    className={styles.searchInput}
                 />
             </div>
 
             {loading ? (
                 <div>Loading inventory...</div>
             ) : (
-                <div style={{ background: '#111', borderRadius: '8px', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead style={{ background: '#222', color: '#ccc' }}>
-                            <tr>
-                                <th style={{ padding: '1rem' }}>Image</th>
-                                <th style={{ padding: '1rem' }}>Name</th>
-                                <th style={{ padding: '1rem' }}>Category</th>
-                                <th style={{ padding: '1rem' }}>Price</th>
-                                <th style={{ padding: '1rem' }}>Stock</th>
-                                <th style={{ padding: '1rem' }}>Actions</th>
+                <div className={styles.tableContainer}>
+                    <table className={styles.table}>
+                        <thead className={styles.thead}>
+                            <tr className={styles.tr}>
+                                <th className={styles.th}>Image</th>
+                                <th className={styles.th}>Name</th>
+                                <th className={styles.th}>Category</th>
+                                <th className={styles.th}>Price</th>
+                                <th className={styles.th}>Stock</th>
+                                <th className={styles.th}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredProducts.map((product) => (
-                                <tr key={product._id} style={{ borderBottom: '1px solid #222' }}>
-                                    <td style={{ padding: '1rem' }}>
+                                <tr key={product._id} className={styles.tr}>
+                                    <td className={styles.td}>
                                         <div style={{ width: '40px', height: '40px', background: '#333', borderRadius: '4px', overflow: 'hidden' }}>
                                             {/* Use placeholder if image is relative path or missing */}
                                             {product.image && product.image.startsWith('http') ? (
@@ -195,10 +150,10 @@ export default function AdminProductsPage() {
                                             )}
                                         </div>
                                     </td>
-                                    <td style={{ padding: '1rem', fontWeight: '500' }}>{product.name}</td>
-                                    <td style={{ padding: '1rem', color: '#888' }}>{product.category}</td>
-                                    <td style={{ padding: '1rem' }}>KES {product.price.toLocaleString()}</td>
-                                    <td style={{ padding: '1rem' }}>
+                                    <td className={styles.td} style={{ fontWeight: '500' }}>{product.name}</td>
+                                    <td className={styles.td} style={{ color: '#888' }}>{product.category}</td>
+                                    <td className={styles.td}>KES {product.price.toLocaleString()}</td>
+                                    <td className={styles.td}>
                                         <span style={{
                                             padding: '2px 8px',
                                             borderRadius: '4px',
@@ -209,7 +164,7 @@ export default function AdminProductsPage() {
                                             {product.stock}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '1rem', display: 'flex', gap: '10px' }}>
+                                    <td className={styles.td} style={{ display: 'flex', gap: '10px' }}>
                                         <Link href={`/admin/products/${product._id}`}>
                                             <button
                                                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}
