@@ -23,8 +23,8 @@ export default function WishlistPage() {
     }
 
     return (
-        <div className="container" style={{ padding: '4rem 0' }}>
-            <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem', fontWeight: 'bold' }}>My Wishlist</h1>
+        <div className="container" style={{ padding: '2rem 1rem' }}>
+            <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: 'bold' }}>My Wishlist</h1>
             <div className={styles.grid}>
                 {wishlistItems.map((item) => (
                     <div key={item._id} className={styles.card}>

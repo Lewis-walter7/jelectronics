@@ -1,8 +1,19 @@
 import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
 import ProductList from '@/components/product/ProductList';
+import ProductFilters from '@/components/product/ProductFilters';
+import styles from '../products.module.css';
 
-async function getProductsByCategory(category: string, filters: { brand?: string; type?: string }) {
+interface FilterParams {
+    brand?: string;
+    type?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    color?: string;
+    storage?: string;
+}
+
+async function getProductsByCategory(category: string, filters: FilterParams) {
     await connectToDatabase();
 
     // Normalize category for display
@@ -19,6 +30,7 @@ async function getProductsByCategory(category: string, filters: { brand?: string
         }
     ];
 
+    // Brand filter
     if (filters.brand) {
         const brandRegex = new RegExp(filters.brand, 'i');
         andConditions.push({
@@ -30,6 +42,7 @@ async function getProductsByCategory(category: string, filters: { brand?: string
         });
     }
 
+    // Type filter
     if (filters.type) {
         const typeRegex = new RegExp(filters.type, 'i');
         andConditions.push({
@@ -38,6 +51,30 @@ async function getProductsByCategory(category: string, filters: { brand?: string
                 { "features.Type": { $regex: typeRegex } },
                 { "features.type": { $regex: typeRegex } }
             ]
+        });
+    }
+
+    // Price Filter
+    if (filters.minPrice || filters.maxPrice) {
+        const priceQuery: any = {};
+        if (filters.minPrice) priceQuery.$gte = Number(filters.minPrice);
+        if (filters.maxPrice) priceQuery.$lte = Number(filters.maxPrice);
+        andConditions.push({ price: priceQuery });
+    }
+
+    // Color Filter
+    if (filters.color) {
+        const colors = filters.color.split(',');
+        const colorRegexes = colors.map(c => new RegExp(c, 'i'));
+        andConditions.push({ colors: { $in: colorRegexes } });
+    }
+
+    // Storage Filter
+    if (filters.storage) {
+        const storages = filters.storage.split(',');
+        const storageRegexes = storages.map(s => new RegExp(s, 'i'));
+        andConditions.push({
+            'variants.name': { $in: storageRegexes }
         });
     }
 
@@ -51,7 +88,8 @@ async function getProductsByCategory(category: string, filters: { brand?: string
         salePrice: doc.salePrice,
         category: doc.category,
         imageUrl: doc.imageUrl || doc.image || '',
-        slug: doc.slug
+        slug: doc.slug,
+        features: doc.features || {}
     }));
 
     // Capitalize for header
@@ -76,13 +114,44 @@ export default async function CategoryPage({
 
     const brand = typeof resolvedSearchParams.brand === 'string' ? resolvedSearchParams.brand : undefined;
     const type = typeof resolvedSearchParams.type === 'string' ? resolvedSearchParams.type : undefined;
+    const minPrice = typeof resolvedSearchParams.minPrice === 'string' ? resolvedSearchParams.minPrice : undefined;
+    const maxPrice = typeof resolvedSearchParams.maxPrice === 'string' ? resolvedSearchParams.maxPrice : undefined;
+    const color = typeof resolvedSearchParams.color === 'string' ? resolvedSearchParams.color : undefined;
+    const storage = typeof resolvedSearchParams.storage === 'string' ? resolvedSearchParams.storage : undefined;
 
-    const { products, categoryName } = await getProductsByCategory(category, { brand, type });
+    const { products, categoryName } = await getProductsByCategory(category, {
+        brand,
+        type,
+        minPrice,
+        maxPrice,
+        color,
+        storage
+    });
 
     return (
-        <div className="container" style={{ paddingTop: '1rem', paddingBottom: '4rem' }}>
-            <h1 style={{ marginBottom: '1rem', fontSize: '2.5rem', fontWeight: 'bold' }}>{categoryName}</h1>
-            <ProductList products={products} />
+        <div className={`container ${styles.pageContainer}`}>
+            <h1 className={styles.header}>{categoryName}</h1>
+
+            <div className={styles.layoutGrid}>
+                {/* Sidebar */}
+                <aside className={styles.sidebar}>
+                    <ProductFilters />
+                </aside>
+
+                {/* Main Content */}
+                <main className={styles.mainContent}>
+                    {products.length === 0 ? (
+                        <div className={styles.noResults}>
+                            <p className={styles.noResultsText}>No products match your filters.</p>
+                            <a href={`/products/${category}`} className={styles.clearFilters}>Clear all filters</a>
+                        </div>
+                    ) : (
+                        <div className="products-grid-wrapper">
+                            <ProductList products={products} />
+                        </div>
+                    )}
+                </main>
+            </div>
         </div>
     );
 }

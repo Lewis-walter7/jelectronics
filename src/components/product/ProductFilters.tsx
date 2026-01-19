@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 export default function ProductFilters() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
 
     // Initial state from URL
     const initialMin = searchParams.get('minPrice') || '';
@@ -53,7 +54,8 @@ export default function ProductFilters() {
         // Reset page to 1 if we had pagination (optional future proofing)
         // params.delete('page'); 
 
-        router.push(`/products?${params.toString()}`);
+        // Use current pathname instead of hardcoded /products
+        router.push(`${pathname}?${params.toString()}`);
     };
 
     const toggleColor = (color: string) => {
@@ -223,7 +225,7 @@ export default function ProductFilters() {
                             setMaxPrice('');
                             setSelectedColors([]);
                             setSelectedStorage([]);
-                            router.push('/products');
+                            router.push(pathname);
                             setIsOpen(false);
                         }}
                         style={{

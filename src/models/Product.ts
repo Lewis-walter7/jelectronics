@@ -14,6 +14,18 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Please provide a price.'],
     },
+    isOnSpecialOffer: {
+        type: Boolean,
+        default: false,
+    },
+    salePrice: {
+        type: Number,
+        default: null,
+    },
+    discountPercentage: {
+        type: Number,
+        default: 0,
+    },
     category: {
         type: String,
         enum: ['Phones', 'Laptops', 'Tablets', 'Accessories', 'TVs', 'Other'],

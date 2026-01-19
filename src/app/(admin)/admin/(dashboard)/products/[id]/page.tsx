@@ -36,6 +36,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
     // Advanced Fields State
     const [isFeatured, setIsFeatured] = useState(false);
+    const [isOnSpecialOffer, setIsOnSpecialOffer] = useState(false);
+    const [salePrice, setSalePrice] = useState('');
     const [colors, setColors] = useState<string[]>([]);
     const [colorInput, setColorInput] = useState('');
     const [hasVariants, setHasVariants] = useState(false);
@@ -63,6 +65,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     setIsFeatured(p.isFeatured || false);
                     setStatus(p.status || 'published');
                     setColors(p.colors || []);
+                    setIsOnSpecialOffer(p.isOnSpecialOffer || false);
+                    setSalePrice(p.salePrice ? p.salePrice.toString() : '');
 
                     if (p.variants && p.variants.length > 0) {
                         setHasVariants(true);
@@ -319,6 +323,14 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 if (s.key.trim()) specsObject[s.key.trim()] = s.value.trim();
             });
 
+            // Calculate discount percentage if on special offer
+            let discountPercentage = 0;
+            if (isOnSpecialOffer && salePrice && Number(salePrice) > 0) {
+                const originalPrice = Number(formData.price);
+                const offerPrice = Number(salePrice);
+                discountPercentage = Math.round(((originalPrice - offerPrice) / originalPrice) * 100);
+            }
+
             const payload = {
                 _id: id,
                 ...formData,
@@ -326,6 +338,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 features: featuresObject,
                 specifications: specsObject,
                 isFeatured,
+                isOnSpecialOffer,
+                salePrice: isOnSpecialOffer && salePrice ? Number(salePrice) : null,
+                discountPercentage,
                 colors,
                 variants: hasVariants ? variants.map(v => ({
                     name: v.name,
@@ -470,7 +485,14 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         <input
                             type="checkbox"
                             checked={isFeatured}
-                            onChange={(e) => setIsFeatured(e.target.checked)}
+                            onChange={(e) => {
+                                setIsFeatured(e.target.checked);
+                                if (e.target.checked) {
+                                    // If featured is checked, uncheck special offer
+                                    setIsOnSpecialOffer(false);
+                                    setSalePrice('');
+                                }
+                            }}
                             style={{ accentColor: '#ff6b00' }}
                         />
                         Featured Product
@@ -492,6 +514,42 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         <label style={labelStyle}>Stock Quantity</label>
                         <input name="stock" type="number" required value={formData.stock} placeholder="10" style={inputStyle} onChange={handleChange} />
                     </div>
+                </div>
+
+                {/* Special Offer Section */}
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#0f0f0f', borderRadius: '8px', border: '1px solid #222' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem', color: isOnSpecialOffer ? '#ff6b00' : '#ccc' }}>
+                        <input
+                            type="checkbox"
+                            checked={isOnSpecialOffer}
+                            onChange={(e) => {
+                                setIsOnSpecialOffer(e.target.checked);
+                                if (e.target.checked) {
+                                    // If special offer is checked, uncheck featured
+                                    setIsFeatured(false);
+                                }
+                            }}
+                            style={{ accentColor: '#ff6b00' }}
+                        />
+                        Mark as Special Offer
+                    </label>
+                    {isOnSpecialOffer && (
+                        <div style={{ marginTop: '1rem' }}>
+                            <label style={{ ...labelStyle, marginTop: 0, color: '#ff6b00' }}>Sale Price (KES)</label>
+                            <input
+                                type="number"
+                                value={salePrice}
+                                onChange={(e) => setSalePrice(e.target.value)}
+                                placeholder="120000"
+                                style={inputStyle}
+                            />
+                            {salePrice && formData.price && Number(salePrice) < Number(formData.price) && (
+                                <p style={{ fontSize: '0.85rem', color: '#10b981', marginTop: '0.5rem' }}>
+                                    Discount: {Math.round(((Number(formData.price) - Number(salePrice)) / Number(formData.price)) * 100)}% OFF
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <label style={labelStyle}>Category</label>

@@ -12,8 +12,10 @@ export default function Footer() {
                     <ul>
                         <li><Link href="/products" className={styles.link}>All Products</Link></li>
                         <li><Link href="/products/phones" className={styles.link}>Smartphones</Link></li>
-                        <li><Link href="/products/laptops" className={styles.link}>Laptops & Computers</Link></li>
-                        <li><Link href="/products/tablets" className={styles.link}>Tablets</Link></li>
+                        <li><Link href="/products/tablets" className={styles.link}>Tablets & iPads</Link></li>
+                        <li><Link href="/products/audio" className={styles.link}>Audio</Link></li>
+                        <li><Link href="/products/gaming" className={styles.link}>Gaming</Link></li>
+                        <li><Link href="/products/wearables" className={styles.link}>Wearables</Link></li>
                         <li><Link href="/products/accessories" className={styles.link}>Accessories</Link></li>
                     </ul>
                 </div>
