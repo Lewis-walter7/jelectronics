@@ -2,44 +2,86 @@ import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
 import ProductList from '@/components/product/ProductList';
 
-async function getProductsByCategory(category: string) {
+async function getProductsByCategory(category: string, filters: { brand?: string; type?: string }) {
     await connectToDatabase();
 
-    // Normalize category for display, but query strictly or case-intensitively? 
-    // Admin saves 'Phones', 'Laptops'. URL might be 'phones'.
-    // Use regex for case-insensitive match
+    // Normalize category for display
     const categoryRegex = new RegExp(`^${category}$`, 'i');
 
-    const productsDocs = await Product.find({
-        category: { $regex: categoryRegex },
-        $or: [
-            { status: 'published' },
-            { status: { $exists: false } },
-            { status: null }
-        ]
-    }).sort({ createdAt: -1 }).lean();
+    const andConditions: any[] = [
+        { category: { $regex: categoryRegex } },
+        {
+            $or: [
+                { status: 'published' },
+                { status: { $exists: false } },
+                { status: null }
+            ]
+        }
+    ];
+
+    if (filters.brand) {
+        const brandRegex = new RegExp(filters.brand, 'i');
+        andConditions.push({
+            $or: [
+                { name: { $regex: brandRegex } },
+                { "features.Brand": { $regex: brandRegex } },
+                { "features.brand": { $regex: brandRegex } }
+            ]
+        });
+    }
+
+    if (filters.type) {
+        const typeRegex = new RegExp(filters.type, 'i');
+        andConditions.push({
+            $or: [
+                { name: { $regex: typeRegex } },
+                { "features.Type": { $regex: typeRegex } },
+                { "features.type": { $regex: typeRegex } }
+            ]
+        });
+    }
+
+    const productsDocs = await Product.find({ $and: andConditions }).sort({ createdAt: -1 }).lean();
 
     const products = productsDocs.map((doc: any) => ({
-        id: doc._id.toString(),
-        title: doc.name,
+        _id: doc._id.toString(),
+        name: doc.name,
+        description: doc.description,
         price: doc.price,
+        salePrice: doc.salePrice,
         category: doc.category,
-        image: doc.imageUrl || doc.image || ''
+        imageUrl: doc.imageUrl || doc.image || '',
+        slug: doc.slug
     }));
 
     // Capitalize for header
     const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
 
-    return { products, categoryName };
+    // Append filter to title if present
+    const filterTitle = filters.brand ? ` - ${filters.brand.charAt(0).toUpperCase() + filters.brand.slice(1)}` :
+        filters.type ? ` - ${filters.type.charAt(0).toUpperCase() + filters.type.slice(1)}` : '';
+
+    return { products, categoryName: `${categoryName}${filterTitle}` };
 }
 
-export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
+export default async function CategoryPage({
+    params,
+    searchParams
+}: {
+    params: Promise<{ category: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
     const { category } = await params;
-    const { products, categoryName } = await getProductsByCategory(category);
+    const resolvedSearchParams = await searchParams;
+
+    const brand = typeof resolvedSearchParams.brand === 'string' ? resolvedSearchParams.brand : undefined;
+    const type = typeof resolvedSearchParams.type === 'string' ? resolvedSearchParams.type : undefined;
+
+    const { products, categoryName } = await getProductsByCategory(category, { brand, type });
 
     return (
-        <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-            <h1 style={{ marginBottom: '2rem', fontSize: '2.5rem', fontWeight: 'bold' }}>{categoryName}</h1>
+        <div className="container" style={{ paddingTop: '1rem', paddingBottom: '4rem' }}>
+            <h1 style={{ marginBottom: '1rem', fontSize: '2.5rem', fontWeight: 'bold' }}>{categoryName}</h1>
             <ProductList products={products} />
         </div>
     );

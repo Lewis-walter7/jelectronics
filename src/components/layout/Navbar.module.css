@@ -178,6 +178,17 @@
     z-index: 1000;
 }
 
+/* Bridge the gap so hover isn't lost */
+.dropdownWrapper::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    /* Matches the visual gap */
+}
+
 /* Show dropdown on parent hover */
 .dropdownWrapper:hover .dropdownMenu {
     display: flex;
@@ -282,8 +293,8 @@
     width: 80%;
     max-width: 300px;
     height: 100%;
-    background: #121212;
-    color: white;
+    background: white;
+    color: #333;
     z-index: 1100;
     transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -316,7 +327,7 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.8);
+    color: #333;
     padding: 5px;
 }
 
@@ -424,5 +435,129 @@
     .cartBtn {
         font-size: 1.3rem;
         padding: 4px;
+    }
+
+    /* Mobile Menu Tabs */
+    .tabContainer {
+        display: flex;
+        background: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .tabButton {
+        flex: 1;
+        padding: 15px;
+        text-align: center;
+        background: transparent;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #666;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+    }
+
+    .activeTab {
+        background: white;
+        color: var(--color-primary);
+        font-weight: 700;
+        border-bottom: 2px solid var(--color-primary);
+    }
+
+    /* Tab Content Lists */
+    .mobileList {
+        display: flex;
+        flex-direction: column;
+        background: white;
+    }
+
+    .mobileListItem {
+        padding: 0;
+        /* Remove default padding, handle in inner elements */
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid #eee;
+        background: white;
+    }
+
+    /* The main row with Link and Toggle */
+    .accordionRow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    /* The Main Category Link */
+    .categoryLink {
+        flex: 1;
+        padding: 15px 20px;
+        text-decoration: none;
+        color: #333;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: block;
+    }
+
+    .categoryLink:hover {
+        color: var(--color-primary);
+    }
+
+    /* The Toggle Button */
+    .accordionToggle {
+        width: 50px;
+        height: 50px;
+        /* Match height of row approx */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        border-left: 1px solid #eee;
+        cursor: pointer;
+        color: #999;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+    }
+
+    .accordionToggle.expanded {
+        background: var(--color-primary);
+        /* Blue/Primary */
+        color: white;
+        border-left-color: var(--color-primary);
+    }
+
+    /* Submenu Container */
+    .submenu {
+        width: 100%;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        border-top: 1px solid #eee;
+    }
+
+    .submenuItem {
+        padding: 12px 20px 12px 30px;
+        /* Indent slightly */
+        font-size: 0.9rem;
+        color: #555;
+        text-decoration: none;
+        border-bottom: 1px solid #f5f5f5;
+        display: block;
+    }
+
+    .submenuItem.highlight {
+        color: var(--color-primary);
+    }
+
+    .submenuItem:hover {
+        background: #f9f9f9;
+        color: var(--color-primary);
+    }
+
+    .chevron {
+        font-weight: bold;
     }
 }
