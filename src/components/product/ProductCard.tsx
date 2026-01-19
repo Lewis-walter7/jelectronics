@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './ProductCard.module.css';
+import StarRating from '../review/StarRating';
 import { useCart } from '@/context/CartContext';
 import { useCompare } from '@/context/CompareContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -17,9 +18,11 @@ interface ProductCardProps {
     imageUrl: string;
     category: string;
     slug?: string;
+    averageRating?: number;
+    reviewCount?: number;
 }
 
-export default function ProductCard({ _id, name, description, price, salePrice, imageUrl, category, slug }: ProductCardProps) {
+export default function ProductCard({ _id, name, description, price, salePrice, imageUrl, category, slug, averageRating = 0, reviewCount = 0 }: ProductCardProps) {
     const { addToCart } = useCart();
     const { compareList, addToCompare, removeFromCompare } = useCompare();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -118,6 +121,11 @@ export default function ProductCard({ _id, name, description, price, salePrice, 
             </div>
             <div className={styles.content}>
                 <span className={styles.category}>{category}</span>
+                {averageRating > 0 && (
+                    <div style={{ marginBottom: '4px' }}>
+                        <StarRating rating={averageRating} readonly size="small" />
+                    </div>
+                )}
                 <h3 className={styles.title}>{name}</h3>
                 <div className={styles.priceRow}>
                     <div className={styles.prices}>

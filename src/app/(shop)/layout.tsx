@@ -3,6 +3,7 @@ import Footer from '@/components/layout/Footer';
 import { CartProvider } from '@/context/CartContext';
 import { CompareProvider } from '@/context/CompareContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+import { RecentlyViewedProvider } from '@/context/RecentlyViewedContext';
 import ComparisonFloatingBar from '@/components/product/ComparisonFloatingBar';
 
 export default function ShopLayout({
@@ -14,12 +15,14 @@ export default function ShopLayout({
         <WishlistProvider>
             <CartProvider>
                 <CompareProvider>
-                    <Navbar />
-                    <main style={{ minHeight: '100vh', paddingTop: '80px' }}>
-                        {children}
-                    </main>
-                    <Footer />
-                    <ComparisonFloatingBar />
+                    <RecentlyViewedProvider>
+                        <Navbar />
+                        <main style={{ minHeight: '100vh', paddingTop: '80px' }}>
+                            {children}
+                        </main>
+                        <Footer />
+                        <ComparisonFloatingBar />
+                    </RecentlyViewedProvider>
                 </CompareProvider>
             </CartProvider>
         </WishlistProvider>

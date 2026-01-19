@@ -16,18 +16,23 @@ export default async function SpecialOffers() {
             { status: { $exists: false } },
             { status: null }
         ]
-    }).limit(4).sort({ createdAt: -1 }).lean();
+    }).limit(12).sort({ createdAt: -1 }).lean();
 
     // Map to simple object
-    const products = productsDocs.map((doc: any) => ({
-        _id: doc._id.toString(),
-        name: doc.name,
-        price: doc.price,
-        salePrice: doc.salePrice,
-        imageUrl: doc.imageUrl || doc.image || '',
-        slug: doc.slug,
-        discount: doc.discountPercentage || 0
-    }));
+    const products = productsDocs.map((doc: any) => {
+        const safeName = doc.name || 'Product';
+        const safeSlug = doc.slug || `${safeName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${doc._id.toString()}`;
+        return {
+            _id: doc._id.toString(),
+            name: doc.name,
+            price: doc.price,
+            salePrice: doc.salePrice,
+            imageUrl: doc.imageUrl || doc.image || '',
+            category: doc.category,
+            slug: safeSlug,
+            discount: doc.discountPercentage || 0
+        };
+    });
 
     if (products.length === 0) return null;
 
@@ -39,7 +44,7 @@ export default async function SpecialOffers() {
                     {products.map((product) => (
                         <Link
                             key={product._id}
-                            href={`/product/${product._id}`}
+                            href={`/products/${product.category.toLowerCase()}/${product.slug}`}
                             className={styles.card}
                         >
                             <div className={styles.imageWrapper}>
@@ -63,6 +68,14 @@ export default async function SpecialOffers() {
                             </div>
                         </Link>
                     ))}
+                </div>
+                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                    <Link
+                        href="/special-offers"
+                        className={styles.viewMoreBtn}
+                    >
+                        View More Special Offers →
+                    </Link>
                 </div>
             </div>
         </section>

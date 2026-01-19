@@ -53,6 +53,16 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    averageRating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
+    reviewCount: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         enum: ['published', 'draft'],
@@ -65,6 +75,14 @@ const ProductSchema = new mongoose.Schema({
     specifications: {
         type: Object,
         default: {}
+    },
+    bundledProducts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
+    bundleDiscount: {
+        type: Number,
+        default: 5
     }
 }, { timestamps: true });
 

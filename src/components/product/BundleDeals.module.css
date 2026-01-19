@@ -1,0 +1,180 @@
+.container {
+    margin: 4rem auto;
+    background: #111;
+    /* Slightly lighter than main bg if needed, or transparent */
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.heading {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: white;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+}
+
+.bundleWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.visuals {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 300px;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
+
+.imageItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.imageBox {
+    width: 100px;
+    height: 100px;
+    background: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #444;
+}
+
+.image {
+    object-fit: cover;
+}
+
+.plus {
+    font-size: 1.5rem;
+    color: #888;
+    font-weight: bold;
+}
+
+.selectionList {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.checkRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed #333;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    flex: 1;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #ff6b00;
+    cursor: pointer;
+}
+
+.productName {
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+.price {
+    color: #ff6b00;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.summary {
+    flex: 0 0 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-left: 1rem;
+    border-left: 1px solid #333;
+}
+
+.priceBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.totalLabel {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.priceValues {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.originalTotal {
+    text-decoration: line-through;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.finalTotal {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.saved {
+    color: #10b981;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.addBundleBtn {
+    background: #ff6b00;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.addBundleBtn:hover {
+    background: #e65100;
+}
+
+.addBundleBtn:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+    .bundleWrapper {
+        flex-direction: column;
+    }
+
+    .summary {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #333;
+        padding-left: 0;
+        padding-top: 1.5rem;
+    }
+}

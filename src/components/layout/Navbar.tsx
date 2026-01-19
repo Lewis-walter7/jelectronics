@@ -167,6 +167,9 @@ export default function Navbar() {
                                     ))}
 
                                     <div className={styles.menuItem}>
+                                        <Link href="/faq" style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>FAQ</Link>
+                                    </div>
+                                    <div className={styles.menuItem}>
                                         <Link href="/about" style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>About Us</Link>
                                     </div>
                                     <div className={styles.menuItem}>
@@ -181,41 +184,41 @@ export default function Navbar() {
                         JElectronics
                     </Link>
 
-                {/* CENTER: Search Bar */}
-                <div className={styles.searchSection}>
-                    <form onSubmit={handleSearch} className={styles.searchForm}>
-                        <input
-                            type="text"
-                            placeholder="Search products..."
-                            className={styles.searchInput}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <button type="submit" className={styles.searchBtn} title="Search">
-                            🔍
-                        </button>
-                    </form>
+                    {/* CENTER: Search Bar */}
+                    <div className={styles.searchSection}>
+                        <form onSubmit={handleSearch} className={styles.searchForm}>
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                className={styles.searchInput}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <button type="submit" className={styles.searchBtn} title="Search">
+                                🔍
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* RIGHT: Cart & Saved */}
+                    <div className={styles.rightSection}>
+                        <Link href="/wishlist" className={styles.iconLink}>
+                            <div className={styles.cartBtn} title="My Wishlist">
+                                ❤️
+                                <span className={styles.cartLabel}>Saved</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/checkout" className={styles.iconLink}>
+                            <div className={styles.cartBtn} title="View Cart">
+                                🛒
+                                <span className={styles.cartLabel}>Cart</span>
+                                {totalItems > 0 && <span className={styles.cartCount}>{totalItems}</span>}
+                            </div>
+                        </Link>
+                    </div>
+
                 </div>
-
-                {/* RIGHT: Cart & Saved */}
-                <div className={styles.rightSection}>
-                    <Link href="/wishlist" className={styles.iconLink}>
-                        <div className={styles.cartBtn} title="My Wishlist">
-                            ❤️
-                            <span className={styles.cartLabel}>Saved</span>
-                        </div>
-                    </Link>
-
-                    <Link href="/checkout" className={styles.iconLink}>
-                        <div className={styles.cartBtn} title="View Cart">
-                            🛒
-                            <span className={styles.cartLabel}>Cart</span>
-                            {totalItems > 0 && <span className={styles.cartCount}>{totalItems}</span>}
-                        </div>
-                    </Link>
-                </div>
-
-            </div>
             </nav>
 
             {/* Mobile Menu Drawer */}
@@ -223,118 +226,118 @@ export default function Navbar() {
                 className={`${styles.mobileMenuOverlay} ${isMobileMenuOpen ? styles.open : ""}`}
                 onClick={() => setIsMobileMenuOpen(false)}
             ></div>
-    <div className={`${styles.mobileMenuDrawer} ${isMobileMenuOpen ? styles.open : ''}`}>
-        <div className={styles.drawerHeader} style={{ padding: 0, flexDirection: 'column', alignItems: 'stretch' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
-                <button className={styles.closeBtn} onClick={() => setIsMobileMenuOpen(false)}>✕</button>
-            </div>
+            <div className={`${styles.mobileMenuDrawer} ${isMobileMenuOpen ? styles.open : ''}`}>
+                <div className={styles.drawerHeader} style={{ padding: 0, flexDirection: 'column', alignItems: 'stretch' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
+                        <button className={styles.closeBtn} onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+                    </div>
 
-            <div className={styles.tabContainer}>
-                <button
-                    className={`${styles.tabButton} ${activeTab === 'categories' ? styles.activeTab : ''}`}
-                    onClick={() => setActiveTab('categories')}
-                >
-                    CATEGORIES
-                </button>
-                <button
-                    className={`${styles.tabButton} ${activeTab === 'menu' ? styles.activeTab : ''}`}
-                    onClick={() => setActiveTab('menu')}
-                >
-                    MENU
-                </button>
-            </div>
-        </div>
+                    <div className={styles.tabContainer}>
+                        <button
+                            className={`${styles.tabButton} ${activeTab === 'categories' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('categories')}
+                        >
+                            CATEGORIES
+                        </button>
+                        <button
+                            className={`${styles.tabButton} ${activeTab === 'menu' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('menu')}
+                        >
+                            MENU
+                        </button>
+                    </div>
+                </div>
 
-        <div className={styles.drawerContent} style={{ padding: 0 }}>
-            {activeTab === 'categories' ? (
-                <div className={styles.mobileList}>
-                    {categories.map((cat) => (
-                        <div key={cat.slug} className={styles.mobileListItem}>
-                            {/* Row: Name Link + Toggle Button */}
-                            <div className={styles.accordionRow}>
-                                <Link
-                                    href={`/products/${cat.slug}`}
-                                    className={styles.categoryLink}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    {cat.name}
-                                </Link>
-                                <button
-                                    className={`${styles.accordionToggle} ${expandedCategory === cat.slug ? styles.expanded : ''}`}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        toggleCategory(cat.slug);
-                                    }}
-                                >
-                                    {expandedCategory === cat.slug ? '∨' : '›'}
-                                </button>
-                            </div>
-
-                            {/* Submenu List */}
-                            {expandedCategory === cat.slug && (
-                                <div className={styles.submenu}>
-                                    {cat.subItems.map((sub, idx) => (
+                <div className={styles.drawerContent} style={{ padding: 0 }}>
+                    {activeTab === 'categories' ? (
+                        <div className={styles.mobileList}>
+                            {categories.map((cat) => (
+                                <div key={cat.slug} className={styles.mobileListItem}>
+                                    {/* Row: Name Link + Toggle Button */}
+                                    <div className={styles.accordionRow}>
                                         <Link
-                                            key={idx}
-                                            href={`/products/${sub.slug}`}
-                                            className={styles.submenuItem}
+                                            href={`/products/${cat.slug}`}
+                                            className={styles.categoryLink}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                         >
-                                            {sub.name}
+                                            {cat.name}
                                         </Link>
-                                    ))}
+                                        <button
+                                            className={`${styles.accordionToggle} ${expandedCategory === cat.slug ? styles.expanded : ''}`}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                toggleCategory(cat.slug);
+                                            }}
+                                        >
+                                            {expandedCategory === cat.slug ? '∨' : '›'}
+                                        </button>
+                                    </div>
+
+                                    {/* Submenu List */}
+                                    {expandedCategory === cat.slug && (
+                                        <div className={styles.submenu}>
+                                            {cat.subItems.map((sub, idx) => (
+                                                <Link
+                                                    key={idx}
+                                                    href={`/products/${sub.slug}`}
+                                                    className={styles.submenuItem}
+                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                >
+                                                    {sub.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            ))}
                         </div>
-                    ))}
+                    ) : (
+                        <div className={styles.mobileList}>
+                            <div className={styles.mobileListItem} style={{ padding: 0 }}>
+                                <div className={styles.accordionRow}>
+                                    <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
+                                        Home
+                                    </Link>
+                                    <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
+                                </div>
+                            </div>
+                            <div className={styles.mobileListItem} style={{ padding: 0 }}>
+                                <div className={styles.accordionRow}>
+                                    <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
+                                        About Us
+                                    </Link>
+                                    <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
+                                </div>
+                            </div>
+                            <div className={styles.mobileListItem} style={{ padding: 0 }}>
+                                <div className={styles.accordionRow}>
+                                    <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
+                                        Contact Us
+                                    </Link>
+                                    <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
+                                </div>
+                            </div>
+                            <div className={styles.mobileListItem} style={{ padding: 0 }}>
+                                <div className={styles.accordionRow}>
+                                    <Link href="/checkout" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
+                                        Shopping Cart
+                                    </Link>
+                                    <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
+                                </div>
+                            </div>
+                            <div className={styles.mobileListItem} style={{ padding: 0 }}>
+                                <div className={styles.accordionRow}>
+                                    <Link href="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
+                                        Wishlist
+                                    </Link>
+                                    <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            ) : (
-                <div className={styles.mobileList}>
-                    <div className={styles.mobileListItem} style={{ padding: 0 }}>
-                        <div className={styles.accordionRow}>
-                            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
-                                Home
-                            </Link>
-                            <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
-                        </div>
-                    </div>
-                    <div className={styles.mobileListItem} style={{ padding: 0 }}>
-                        <div className={styles.accordionRow}>
-                            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
-                                About Us
-                            </Link>
-                            <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
-                        </div>
-                    </div>
-                    <div className={styles.mobileListItem} style={{ padding: 0 }}>
-                        <div className={styles.accordionRow}>
-                            <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
-                                Contact Us
-                            </Link>
-                            <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
-                        </div>
-                    </div>
-                    <div className={styles.mobileListItem} style={{ padding: 0 }}>
-                        <div className={styles.accordionRow}>
-                            <Link href="/checkout" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
-                                Shopping Cart
-                            </Link>
-                            <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
-                        </div>
-                    </div>
-                    <div className={styles.mobileListItem} style={{ padding: 0 }}>
-                        <div className={styles.accordionRow}>
-                            <Link href="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className={styles.categoryLink}>
-                                Wishlist
-                            </Link>
-                            <span style={{ padding: '0 20px', color: '#ccc' }}>›</span>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    </div>
+            </div>
         </>
     );
 }

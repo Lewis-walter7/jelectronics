@@ -8,12 +8,11 @@
     font-weight: 700;
     color: white;
     margin-bottom: 2rem;
-    text-align: center;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 1.5rem;
 }
 
@@ -38,25 +37,11 @@
     position: relative;
     width: 100%;
     padding-top: 100%;
-    /* 1:1 aspect ratio */
     background: #000;
 }
 
 .image {
     object-fit: cover;
-}
-
-.badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ef4444;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    z-index: 2;
 }
 
 .content {
@@ -67,7 +52,7 @@
 }
 
 .title {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: white;
     line-height: 1.4;
@@ -82,40 +67,31 @@
 .priceRow {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
 .salePrice {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--color-primary);
 }
 
 .originalPrice {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #666;
     text-decoration: line-through;
 }
 
-.viewMoreBtn {
-    display: inline-block;
-    padding: 12px 32px;
-    background: var(--color-primary);
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: transform 0.2s ease;
-}
-
-.viewMoreBtn:hover {
-    transform: translateY(-2px);
-}
-
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
@@ -130,30 +106,21 @@
     }
 
     .grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
     }
 
     .title {
         font-size: 0.85rem;
     }
-
-    .salePrice {
-        font-size: 1rem;
-    }
-
-    .originalPrice {
-        font-size: 0.8rem;
-    }
 }
 
 @media (max-width: 480px) {
-    .content {
-        padding: 0.75rem;
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .badge {
-        padding: 4px 8px;
-        font-size: 0.75rem;
+    .content {
+        padding: 0.75rem;
     }
 }

@@ -40,6 +40,7 @@ export default function DashboardLayout({
                 <nav className={styles.nav}>
                     <Link href="/admin/dashboard" className={styles.link} onClick={() => setIsSidebarOpen(false)}>📊 Dashboard</Link>
                     <Link href="/admin/products" className={styles.link} onClick={() => setIsSidebarOpen(false)}>📦 Products</Link>
+                    <Link href="/admin/reviews" className={styles.link} onClick={() => setIsSidebarOpen(false)}>⭐ Reviews</Link>
                     <Link href="/admin/register" className={styles.link} onClick={() => setIsSidebarOpen(false)}>👥 Register Admin</Link>
                     <button disabled className={styles.link} style={{ opacity: 0.5, cursor: 'not-allowed', textAlign: 'left', border: 'none', background: 'transparent' }}>🚚 Orders (Soon)</button>
 

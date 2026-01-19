@@ -1,0 +1,132 @@
+.reviewsSection {
+    margin-top: 3rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.heading {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+}
+
+.overallRating {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #111;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #222;
+}
+
+.ratingNumber {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.reviewCount {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+
+.loading,
+.noReviews {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #888;
+    font-size: 1rem;
+}
+
+.reviewsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.reviewCard {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+}
+
+.reviewCard:hover {
+    border-color: #333;
+}
+
+.reviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+.reviewerName {
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.verified {
+    font-size: 0.75rem;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.reviewDate {
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.reviewTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.reviewText {
+    color: #ccc;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .overallRating {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .reviewHeader {
+        flex-direction: column;
+    }
+
+    .reviewDate {
+        align-self: flex-start;
+    }
+}

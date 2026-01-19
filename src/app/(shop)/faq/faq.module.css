@@ -1,0 +1,159 @@
+.pageTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+.faqContainer {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.section {
+    margin-bottom: 3rem;
+}
+
+.categoryTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #222;
+}
+
+.questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faqItem {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.question:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.question.active {
+    color: var(--color-primary);
+}
+
+.icon {
+    font-size: 1.5rem;
+    font-weight: 300;
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+.answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.answer.open {
+    max-height: 500px;
+}
+
+.answer p {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    margin: 0;
+    color: #ccc;
+    line-height: 1.6;
+}
+
+.contactSection {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 2rem;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+}
+
+.contactSection h3 {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.contactSection p {
+    color: #888;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.contactSection a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.contactSection a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .pageTitle {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .categoryTitle {
+        font-size: 1.25rem;
+    }
+
+    .question {
+        font-size: 1rem;
+        padding: 1rem;
+    }
+
+    .answer p {
+        padding: 0 1rem 1rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .contactSection {
+        padding: 1.5rem;
+    }
+
+    .contactSection h3 {
+        font-size: 1.25rem;
+    }
+
+    .contactSection p {
+        font-size: 1rem;
+    }
+}
