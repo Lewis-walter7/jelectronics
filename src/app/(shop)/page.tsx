@@ -1,8 +1,13 @@
+import dynamic from 'next/dynamic';
 import Hero from '@/components/home/Hero';
-import TrustBadges from '@/components/home/TrustBadges';
-import SpecialOffers from '@/components/home/SpecialOffers';
 import FeaturedProducts from '@/components/product/FeaturedProducts';
-import RecentlyViewed from '@/components/product/RecentlyViewed';
+import TrustBadges from '@/components/home/TrustBadges';
+
+// Lazy load non-critical sections
+const SpecialOffers = dynamic(() => import('@/components/home/SpecialOffers'), {
+  loading: () => <div style={{ height: '300px' }} /> // Placeholder
+});
+const RecentlyViewed = dynamic(() => import('@/components/product/RecentlyViewed'));
 
 export default function Home() {
   return (

@@ -22,6 +22,9 @@ export default function ShippingStep({ onBack, onNext }: ShippingStepProps) {
 
     const [shippingCost, setShippingCost] = useState(300); // Default Nairobi
 
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
+
     const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const total = subtotal + shippingCost;
 
@@ -35,11 +38,69 @@ export default function ShippingStep({ onBack, onNext }: ShippingStepProps) {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Here we would validate and submit order
-        onNext();
+        setIsProcessing(true);
+
+        try {
+            const res = await fetch('/api/mpesa/stkpush', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customer: formData,
+                    items: items.map(item => ({
+                        productId: item.id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        variant: item.variant,
+                        color: item.color
+                    })),
+                    totalAmount: total,
+                    shippingCost
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setOrderSuccess(`Order Placed! Please check your phone (${formData.phone}) to complete the M-Pesa payment.`);
+                // Ideally propagate successful order ID to next step
+                // onNext(); // Or stay here to show success message
+            } else {
+                alert(`Payment Failed: ${data.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error("Checkout Error:", error);
+            alert("Something went wrong. Please try again.");
+        } finally {
+            setIsProcessing(false);
+        }
     };
+
+    if (orderSuccess) {
+        return (
+            <div className={styles.stepContainer} style={{ textAlign: 'center', padding: '3rem' }}>
+                <h2 style={{ color: '#4ade80', marginBottom: '1rem' }}>🎉 Success!</h2>
+                <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>{orderSuccess}</p>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '8px', maxWidth: '400px', margin: '0 auto' }}>
+                    <p style={{ fontSize: '0.9rem', color: '#aaa', marginBottom: '0.5rem' }}>Next Steps:</p>
+                    <ul style={{ textAlign: 'left', listStyle: 'disc', paddingLeft: '1.5rem', color: '#ddd' }}>
+                        <li>Enter your M-Pesa PIN on your phone.</li>
+                        <li>Wait for the confirmation SMS.</li>
+                        <li>You will receive an email receipt shortly.</li>
+                    </ul>
+                </div>
+                <button
+                    onClick={() => window.location.href = '/products'}
+                    className={styles.actionBtn}
+                    style={{ marginTop: '2rem' }}
+                >
+                    Continue Shopping
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.stepContainer}>
@@ -63,10 +124,11 @@ export default function ShippingStep({ onBack, onNext }: ShippingStepProps) {
                             />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#aaa' }}>Phone Number</label>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#aaa' }}>Phone Number (e.g. 07xx)</label>
                             <input
                                 required
                                 type="tel"
+                                placeholder="07xxxxxxxx"
                                 style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: 'white' }}
                                 value={formData.phone}
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -115,7 +177,7 @@ export default function ShippingStep({ onBack, onNext }: ShippingStepProps) {
                             <span style={{ fontSize: '1.5rem' }}>📱</span>
                             <div>
                                 <strong style={{ display: 'block' }}>M-Pesa</strong>
-                                <span style={{ fontSize: '0.9rem', color: '#aaa' }}>Payment will be requested on your phone number provided.</span>
+                                <span style={{ fontSize: '0.9rem', color: '#aaa' }}>Payment will be requested on your phone number provided above.</span>
                             </div>
                         </div>
                     </div>
@@ -143,13 +205,16 @@ export default function ShippingStep({ onBack, onNext }: ShippingStepProps) {
                         className={styles.actionBtn}
                         type="submit"
                         form="checkoutForm"
+                        disabled={isProcessing}
+                        style={{ opacity: isProcessing ? 0.7 : 1, cursor: isProcessing ? 'wait' : 'pointer' }}
                     >
-                        Complete Order
+                        {isProcessing ? 'Processing...' : 'Complete Order'}
                     </button>
 
                     <button
                         onClick={onBack}
                         style={{ width: '100%', background: 'none', border: 'none', color: '#aaa', marginTop: '1rem', cursor: 'pointer' }}
+                        disabled={isProcessing}
                     >
                         &larr; Back to Cart
                     </button>

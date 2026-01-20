@@ -16,6 +16,9 @@ async function getProducts(params: SearchParams) {
     await connectToDatabase();
     const { search, minPrice, maxPrice, color, storage } = params;
 
+    console.log('--- getProducts Debug ---');
+    console.log('Params:', params);
+
     const baseQuery = {
         $or: [
             { status: 'published' },
@@ -46,24 +49,38 @@ async function getProducts(params: SearchParams) {
         andConditions.push({ price: priceQuery });
     }
 
-    // Color Filter (Matches if product.colors contains ANY of the selected colors)
+    // Color Filter (Matches if product.colors contains ANY of the selected colors OR features match)
     if (color) {
         const colors = color.split(',');
         // Case insensitive regex match for flexibility
-        const colorRegexes = colors.map(c => new RegExp(c, 'i'));
-        andConditions.push({ colors: { $in: colorRegexes } });
+        const colorRegexes = colors.map(c => new RegExp(c.trim(), 'i'));
+
+        andConditions.push({
+            $or: [
+                { colors: { $in: colorRegexes } },
+                { 'features.Colors': { $in: colorRegexes } },
+                { 'features.Color': { $in: colorRegexes } },
+                { 'features.Colorways': { $in: colorRegexes } }
+            ]
+        });
     }
 
-    // Storage Filter (Matches if any variant name contains the storage string)
+    // Storage Filter (Matches variants OR features)
     if (storage) {
         const storages = storage.split(',');
-        const storageRegexes = storages.map(s => new RegExp(s, 'i'));
+        const storageRegexes = storages.map(s => new RegExp(s.trim(), 'i'));
         andConditions.push({
-            'variants.name': { $in: storageRegexes }
+            $or: [
+                { 'variants.name': { $in: storageRegexes } },
+                { 'features.Storage': { $in: storageRegexes } },
+                { 'features.Internal Storage': { $in: storageRegexes } },
+                { 'features.Memory': { $in: storageRegexes } }
+            ]
         });
     }
 
     const finalQuery = { $and: andConditions };
+    console.log('Final Query:', JSON.stringify(finalQuery, null, 2));
 
     const productsDocs = await Product.find(finalQuery).sort({ createdAt: -1 }).lean();
 

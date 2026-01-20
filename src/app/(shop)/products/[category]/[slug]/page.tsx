@@ -1,32 +1,29 @@
 import { notFound } from 'next/navigation';
-import AddToCartButton from '@/components/product/AddToCartButton';
-// We are reusing the styles from the generic product page for consistency, 
-// or we can import them from a shared location. 
-// For now let's just use inline or copy styles if needed.
-// Better yet, let's reuse the layout structure.
-
-// Ideally we move the ProductDetail UI to a component.
+import { Metadata } from 'next';
 import styles from './page.module.css';
 import ProductViewer from '@/components/product/ProductViewer';
 import RelatedProducts from '@/components/product/RelatedProducts';
-import ReferenceProducts from '@/components/product/RelatedProducts';
 import ReviewsList from '@/components/review/ReviewsList';
 import ReviewForm from '@/components/review/ReviewForm';
-import StarRating from '@/components/review/StarRating';
 import BundleDeals from '@/components/product/BundleDeals';
+import ProductStructuredData from '@/components/product/ProductStructuredData';
 
 import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
 
-async function getProductById(id: string) {
+async function getProductBySlug(slug: string) {
     try {
         await connectToDatabase();
-        if (!id || id.length !== 24) return null; // Basic ID validation
+        // Extract ID from slug (last part after dash)
+        // Format: "product-name-id"
+        const parts = slug.split('-');
+        const id = parts[parts.length - 1];
+
+        if (!id || id.length !== 24) return null;
 
         const product = await Product.findById(id).lean();
         if (!product) return null;
 
-        // Manually fetch bundles to avoid populate schema issues
         let bundledItems: any[] = [];
         if (product.bundledProducts && product.bundledProducts.length > 0) {
             bundledItems = await Product.find({
@@ -34,15 +31,11 @@ async function getProductById(id: string) {
             }).lean();
         }
 
-        // Transform _id to id and ensure features are good
         return {
             ...product,
             _id: product._id.toString(),
             id: product._id.toString(),
-            // Handle image/imageUrl discrepancy if any
             image: product.imageUrl || product.image || '',
-            // Ensure properties match expected types if needed (e.g. Map to Object)
-            // .lean() with Map type usually returns basic object
             bundledProducts: bundledItems.map((bp: any) => ({
                 _id: bp._id.toString(),
                 name: bp.name,
@@ -59,30 +52,56 @@ async function getProductById(id: string) {
     }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const product = await getProductBySlug(slug);
+
+    if (!product) {
+        return {
+            title: 'Product Not Found',
+        };
+    }
+
+    return {
+        title: product.name,
+        description: product.description.substring(0, 160), // SEO friendly truncation
+        openGraph: {
+            title: product.name,
+            description: product.description.substring(0, 160),
+            images: [product.imageUrl || product.image],
+            type: 'website',
+        },
+    };
+}
+
 export default async function SEOProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-
-    // Extract ID from slug (last part after dash)
-    // Format: "product-name-id"
-    const parts = slug.split('-');
-    const id = parts[parts.length - 1];
-
-    const product = await getProductById(id);
+    const product = await getProductBySlug(slug);
 
     if (!product) {
         return (
             <div className="container" style={{ paddingTop: '4rem', textAlign: 'center' }}>
                 <h1>Product Not Found</h1>
-                <p>We couldn't find a product with ID: {id}</p>
+                <p>We couldn't find the requested product.</p>
             </div>
         );
     }
 
-    // Reuse logic from the other page
     const displayProduct = product;
 
     return (
         <>
+            <ProductStructuredData product={{
+                name: displayProduct.name,
+                description: displayProduct.description,
+                imageUrl: displayProduct.image,
+                price: displayProduct.price,
+                currency: 'KES',
+                sku: displayProduct.id,
+                brand: displayProduct.brand,
+                availability: displayProduct.stock > 0 ? 'InStock' : 'OutOfStock'
+            }} />
+
             <div className={`container ${styles.wrapper}`}>
                 <div className={styles.imageSection}>
                     {displayProduct.image ? (
@@ -103,8 +122,6 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
                     <p className={styles.description}>
                         {displayProduct.description}
                     </p>
-
-                    {/* ... (features list) ... */}
 
                     <ProductViewer product={displayProduct} />
 

@@ -34,7 +34,7 @@ export default function DashboardLayout({
             {/* Sidebar */}
             <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}>
                 <div className={styles.logo}>
-                    JElectronics <span style={{ color: '#ff6b00', fontSize: '0.8rem' }}>Admin</span>
+                    MobiTower <span style={{ color: '#ff6b00', fontSize: '0.8rem' }}>Admin</span>
                 </div>
 
                 <nav className={styles.nav}>
@@ -42,7 +42,7 @@ export default function DashboardLayout({
                     <Link href="/admin/products" className={styles.link} onClick={() => setIsSidebarOpen(false)}>📦 Products</Link>
                     <Link href="/admin/reviews" className={styles.link} onClick={() => setIsSidebarOpen(false)}>⭐ Reviews</Link>
                     <Link href="/admin/register" className={styles.link} onClick={() => setIsSidebarOpen(false)}>👥 Register Admin</Link>
-                    <button disabled className={styles.link} style={{ opacity: 0.5, cursor: 'not-allowed', textAlign: 'left', border: 'none', background: 'transparent' }}>🚚 Orders (Soon)</button>
+                    <Link href="/admin/orders" className={styles.link} onClick={() => setIsSidebarOpen(false)}>🚚 Orders</Link>
 
                     <div className={styles.footer}>
                         <Link href="/" className={styles.link} style={{ fontSize: '0.85rem', color: '#888' }}>
@@ -79,7 +79,7 @@ export default function DashboardLayout({
                     >
                         ☰
                     </button>
-                    <span className={styles.logo}>JElectronics Admin</span>
+                    <span className={styles.logo}>MobiTower Admin</span>
                     <div style={{ width: '32px' }}></div> {/* Spacer for alignment */}
                 </header>
 

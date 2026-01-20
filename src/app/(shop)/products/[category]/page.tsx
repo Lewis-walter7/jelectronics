@@ -65,16 +65,29 @@ async function getProductsByCategory(category: string, filters: FilterParams) {
     // Color Filter
     if (filters.color) {
         const colors = filters.color.split(',');
-        const colorRegexes = colors.map(c => new RegExp(c, 'i'));
-        andConditions.push({ colors: { $in: colorRegexes } });
+        const colorRegexes = colors.map(c => new RegExp(c.trim(), 'i'));
+
+        andConditions.push({
+            $or: [
+                { colors: { $in: colorRegexes } },
+                { 'features.Colors': { $in: colorRegexes } },
+                { 'features.Color': { $in: colorRegexes } },
+                { 'features.Colorways': { $in: colorRegexes } }
+            ]
+        });
     }
 
     // Storage Filter
     if (filters.storage) {
         const storages = filters.storage.split(',');
-        const storageRegexes = storages.map(s => new RegExp(s, 'i'));
+        const storageRegexes = storages.map(s => new RegExp(s.trim(), 'i'));
         andConditions.push({
-            'variants.name': { $in: storageRegexes }
+            $or: [
+                { 'variants.name': { $in: storageRegexes } },
+                { 'features.Storage': { $in: storageRegexes } },
+                { 'features.Internal Storage': { $in: storageRegexes } },
+                { 'features.Memory': { $in: storageRegexes } }
+            ]
         });
     }
 

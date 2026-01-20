@@ -41,7 +41,7 @@ export default function Footer() {
                         <span className={styles.icon}>✉️</span>
                         <div>
                             <strong style={{ display: 'block', color: 'white' }}>Email:</strong>
-                            <span>sales@jelectronics.co.ke</span>
+                            <span>sales@mobitoweraccesories.com</span>
                         </div>
                     </div>
                 </div>
@@ -56,7 +56,6 @@ export default function Footer() {
                     <div className={styles.paymentMethods}>
                         <span className={styles.payTag}>M-Pesa</span>
                         <span className={styles.payTag}>Cash</span>
-                        <span className={styles.payTag}>Bank Transfer</span>
                     </div>
                 </div>
 
@@ -66,7 +65,7 @@ export default function Footer() {
                     <div className={styles.infoItem}>
                         <span className={styles.icon}>📍</span>
                         <div style={{ lineHeight: '1.6' }}>
-                            <strong>JElectronics HQ</strong><br />
+                            <strong>MobiTower HQ</strong><br />
                             Bihi Towers, Basement 1<br />
                             Shop B10, Moi Avenue<br />
                             Nairobi CBD
@@ -79,7 +78,7 @@ export default function Footer() {
             {/* Bottom Bar */}
             <div className={`container ${styles.bottomBar}`}>
                 <div className={styles.copyright}>
-                    © {new Date().getFullYear()} JElectronics. All rights reserved.
+                    © {new Date().getFullYear()} MobiTower Accessories. All rights reserved.
                 </div>
                 <div className={styles.bottomLinks}>
                     <Link href="/about" className={styles.link}>About Us</Link>

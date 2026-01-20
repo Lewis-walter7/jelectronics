@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import connectToDatabase from '@/lib/db';
 import Admin from '@/models/Admin';
 import bcrypt from 'bcryptjs';
+import { SignJWT } from 'jose';
+import { SignInSchema } from '@/lib/validators';
 
 const MAX_ATTEMPTS = 3;
 const LOCK_TIME = 24 * 60 * 60 * 1000; // 24 hours
@@ -11,7 +13,19 @@ export async function POST(request: Request) {
     await connectToDatabase();
 
     // 1. Parse Request
-    const { email, password } = await request.json();
+    // 1. Parse Request & Validate
+    const body = await request.json();
+    const validation = SignInSchema.safeParse(body);
+
+    if (!validation.success) {
+        return NextResponse.json({
+            success: false,
+            error: 'Invalid email or password format',
+            details: validation.error.flatten()
+        }, { status: 400 });
+    }
+
+    const { email, password } = validation.data;
 
     // 2. Ensure Default Admin Exists (Seeding)
     // This ensures you are never totally locked out if the DB is empty
@@ -85,10 +99,24 @@ export async function POST(request: Request) {
         await admin.save();
 
         // Set Cookie
+        const JWT_SECRET = new TextEncoder().encode(
+            process.env.JWT_SECRET || 'fallback-secret-key-change-this-prod'
+        );
+
+        const token = await new SignJWT({
+            adminId: admin._id.toString(),
+            email: admin.email,
+            role: 'admin'
+        })
+            .setProtectedHeader({ alg: 'HS256' })
+            .setIssuedAt()
+            .setExpirationTime('5d')
+            .sign(JWT_SECRET);
+
         const cookieStore = await cookies();
         cookieStore.set({
             name: 'admin_token',
-            value: 'access-granted-secret-token', // Ideally JWT, but opaque is fine for simpler needs
+            value: token,
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',

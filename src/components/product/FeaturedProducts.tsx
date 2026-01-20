@@ -3,31 +3,39 @@ import ProductCard from './ProductCard';
 import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
 
+import { unstable_cache } from 'next/cache';
+
+const getFeaturedProducts = unstable_cache(
+    async () => {
+        await connectToDatabase();
+
+        // Fetch featured, published products
+        const productsDocs = await Product.find({
+            isFeatured: true,
+            $or: [
+                { status: 'published' },
+                { status: { $exists: false } },
+                { status: null }
+            ]
+        }).limit(8).sort({ createdAt: -1 }).lean();
+
+        return productsDocs.map((doc: any) => ({
+            _id: doc._id.toString(),
+            name: doc.name,
+            description: doc.description,
+            price: doc.price,
+            salePrice: doc.salePrice,
+            category: doc.category,
+            imageUrl: doc.imageUrl || doc.image || '',
+            slug: doc.slug
+        }));
+    },
+    ['featured-products'], // Cache key
+    { revalidate: 60, tags: ['products'] } // Revalidate every minute
+);
+
 export default async function FeaturedProducts() {
-    await connectToDatabase();
-
-    // Fetch featured, published products
-    // We lean on the 'status' field being explicit 'published' or checking legacy items
-    const productsDocs = await Product.find({
-        isFeatured: true,
-        $or: [
-            { status: 'published' },
-            { status: { $exists: false } },
-            { status: null }
-        ]
-    }).limit(8).sort({ createdAt: -1 }).lean();
-
-    // Map to simple object to avoid serialization warnings with Mongoose documents
-    const products = productsDocs.map((doc: any) => ({
-        _id: doc._id.toString(),
-        name: doc.name,
-        description: doc.description,
-        price: doc.price,
-        salePrice: doc.salePrice, // Ensure salePrice is passed if exists
-        category: doc.category,
-        imageUrl: doc.imageUrl || doc.image || '',
-        slug: doc.slug
-    }));
+    const products = await getFeaturedProducts();
 
     if (products.length === 0) return null;
 

@@ -181,7 +181,7 @@ export default function Navbar() {
                     </div>
 
                     <Link href="/" className={styles.logo}>
-                        JElectronics
+                        MobiTower
                     </Link>
 
                     {/* CENTER: Search Bar */}

@@ -104,6 +104,7 @@ export default function Hero() {
                                     fill
                                     className={styles.categoryImage}
                                     sizes="(max-width: 768px) 50vw, 20vw"
+                                    priority={true} // Prioritize hero images for LCP
                                 />
                                 <div className={styles.categoryOverlay}>
                                     <span className={styles.categoryName}>{category.name}</span>
