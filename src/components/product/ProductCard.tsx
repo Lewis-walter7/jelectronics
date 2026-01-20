@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext';
 import { useCompare } from '@/context/CompareContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface ProductCardProps {
     _id: string;
@@ -37,7 +38,36 @@ export default function ProductCard({ _id, name, description, price, salePrice, 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
         addToCart({ id: _id, name, price: salePrice || price, imageUrl, quantity: 1 });
-        // Optional: show toast
+
+        toast.custom((t) => (
+            <div
+                style={{
+                    opacity: t.visible ? 1 : 0,
+                    transition: 'opacity 0.2s',
+                    background: 'rgba(20, 20, 20, 0.95)',
+                    color: '#fff',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    minWidth: '300px',
+                    border: '1px solid #333'
+                }}
+            >
+                <div style={{ position: 'relative', width: '40px', height: '40px', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
+                    <Image src={imageUrl} alt={name} fill style={{ objectFit: 'cover' }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>Added to Cart</p>
+                    <p style={{ fontSize: '0.8rem', color: '#aaa', margin: 0 }}>{name}</p>
+                </div>
+                <Link href="/cart" style={{ color: '#ff6b00', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}>
+                    View
+                </Link>
+            </div>
+        ), { duration: 3000 });
     };
 
     const handleToggleCompare = (e: React.MouseEvent) => {
