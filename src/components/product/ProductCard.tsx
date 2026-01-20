@@ -63,7 +63,7 @@ export default function ProductCard({ _id, name, description, price, salePrice, 
                     <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: 0 }}>Added to Cart</p>
                     <p style={{ fontSize: '0.8rem', color: '#aaa', margin: 0 }}>{name}</p>
                 </div>
-                <Link href="/cart" style={{ color: '#ff6b00', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}>
+                <Link href="/checkout" style={{ color: '#ff6b00', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none' }}>
                     View
                 </Link>
             </div>
