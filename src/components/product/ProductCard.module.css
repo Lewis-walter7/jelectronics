@@ -17,7 +17,7 @@
 }
 
 .imageWrapper {
-    height: 250px;
+    height: 200px;
     background: transparent;
     display: flex;
     align-items: center;
@@ -40,7 +40,7 @@
 }
 
 .content {
-    padding: 1.5rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -55,7 +55,7 @@
 }
 
 .title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: white;
     margin: 0 0 0.5rem 0;
@@ -117,6 +117,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
+    margin-top: auto;
 }
 
 .addToCartBtn:hover,

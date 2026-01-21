@@ -347,7 +347,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     price: Number(v.price) || 0,
                     stock: Number(v.stock) || 0
                 })) : [],
-                status: status
+                status: 'published' // Always publish when updating
             };
 
             const res = await fetch('/api/products', {
@@ -693,7 +693,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         disabled={loading}
                         style={{ padding: '10px 20px', background: '#ff6b00', border: 'none', color: 'white', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
                     >
-                        {loading ? 'Update...' : 'Update Product'}
+                        {loading ? (status === 'draft' ? 'Uploading...' : 'Updating...') : (status === 'draft' ? 'Upload Product' : 'Update Product')}
                     </button>
                 </div>
 

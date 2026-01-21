@@ -1,4 +1,5 @@
 import Navbar from '@/components/layout/Navbar';
+import CategoryNav from '@/components/layout/CategoryNav';
 import Footer from '@/components/layout/Footer';
 import { CartProvider } from '@/context/CartContext';
 import { CompareProvider } from '@/context/CompareContext';
@@ -17,6 +18,7 @@ export default function ShopLayout({
                 <CompareProvider>
                     <RecentlyViewedProvider>
                         <Navbar />
+                        <CategoryNav />
                         <main style={{ minHeight: '100vh', paddingTop: '80px' }}>
                             {children}
                         </main>
