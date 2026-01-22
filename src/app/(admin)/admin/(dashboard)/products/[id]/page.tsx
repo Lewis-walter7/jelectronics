@@ -22,6 +22,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         minPrice: '',
         maxPrice: '',
         category: 'Phones',
+        subcategory: '',
         description: '',
         stock: '',
         image: '',
@@ -64,6 +65,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         minPrice: p.minPrice ? p.minPrice.toString() : '',
                         maxPrice: p.maxPrice ? p.maxPrice.toString() : '',
                         category: p.category,
+                        subcategory: p.subcategory || '',
                         description: p.description,
                         stock: p.stock,
                         image: p.imageUrl || p.image || '',
@@ -355,6 +357,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 _id: id,
                 ...formData,
                 brand: formData.brand.trim() || null,
+                subcategory: formData.subcategory.trim() || null,
                 features: featuresObject,
                 specifications: specsObject,
                 isFeatured,
@@ -620,6 +623,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <option value="Storage">Storage</option>
                     <option value="Other">Other</option>
                 </select>
+
+                <label style={labelStyle}>Subcategory (Optional)</label>
+                <input
+                    name="subcategory"
+                    value={formData.subcategory}
+                    placeholder="e.g. Buds, Earphones, Speakers"
+                    style={inputStyle}
+                    onChange={handleChange}
+                />
 
                 <label style={labelStyle}>Description</label>
                 <textarea name="description" value={formData.description} rows={4} style={inputStyle} onChange={handleChange} />

@@ -64,6 +64,7 @@
     border-radius: 12px;
     overflow: hidden;
     display: flex;
+    align-items: center;
     padding: 1.5rem;
     gap: 1rem;
     transition: all 0.3s ease;

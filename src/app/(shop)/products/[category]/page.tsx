@@ -48,6 +48,7 @@ async function getProductsByCategory(category: string, filters: FilterParams) {
         andConditions.push({
             $or: [
                 { name: { $regex: typeRegex } },
+                { subcategory: { $regex: typeRegex } },
                 { "features.Type": { $regex: typeRegex } },
                 { "features.type": { $regex: typeRegex } }
             ]

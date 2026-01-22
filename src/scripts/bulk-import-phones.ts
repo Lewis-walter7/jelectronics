@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import Product from '../models/Product';
 import connectToDatabase from '../lib/db';
 import dotenv from 'dotenv';

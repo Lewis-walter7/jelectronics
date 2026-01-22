@@ -23,6 +23,7 @@ export default function AddProductPage() {
         minPrice: '',
         maxPrice: '',
         category: 'Phones',
+        subcategory: '',
         description: '',
         stock: '',
         image: '',
@@ -81,6 +82,7 @@ export default function AddProductPage() {
             const payload = {
                 ...formData,
                 brand: formData.brand.trim() || null,
+                subcategory: formData.subcategory.trim() || null,
                 imageUrl: formData.images[0] || formData.image,
                 images: formData.images,
                 features: featuresObject,
@@ -356,6 +358,7 @@ export default function AddProductPage() {
             const payload = {
                 ...formData,
                 brand: formData.brand.trim() || null,
+                subcategory: formData.subcategory.trim() || null,
                 imageUrl: formData.images[0] || formData.image,
                 images: formData.images,
                 features: featuresObject,
@@ -589,6 +592,15 @@ export default function AddProductPage() {
                     <option value="Storage">Storage</option>
                     <option value="Other">Other</option>
                 </select>
+
+                <label style={labelStyle}>Subcategory (Optional)</label>
+                <input
+                    name="subcategory"
+                    value={formData.subcategory}
+                    placeholder="e.g. Buds, Earphones, Speakers"
+                    style={inputStyle}
+                    onChange={handleChange}
+                />
 
                 <label style={labelStyle}>Description</label>
                 <textarea name="description" rows={4} style={inputStyle} onChange={handleChange} />

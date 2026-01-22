@@ -38,6 +38,7 @@ async function getProducts(params: SearchParams) {
                 { name: searchRegex },
                 { description: searchRegex },
                 { category: searchRegex },
+                { subcategory: searchRegex },
                 { brand: searchRegex }
             ]
         });

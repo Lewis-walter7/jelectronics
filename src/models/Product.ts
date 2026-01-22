@@ -44,6 +44,10 @@ const ProductSchema = new mongoose.Schema({
         enum: ['Phones', 'Tablets', 'Laptops', 'Audio', 'Gaming', 'Smartwatches', 'Accessories', 'TVs', 'Computing', 'Cameras', 'Networking', 'Storage', 'Other'],
         required: [true, 'Please specify a category.'],
     },
+    subcategory: {
+        type: String,
+        default: null,
+    },
     variants: [{
         name: String,
         price: Number,
