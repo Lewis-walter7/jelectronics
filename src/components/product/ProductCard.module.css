@@ -36,7 +36,21 @@
 }
 
 .card:hover .imageWrapper img {
-    transform: scale(1.05);
+    transform: scale(1.1);
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ff4444;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .content {
@@ -88,16 +102,25 @@
     max-width: 100%;
 }
 
+.prices {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 1rem;
+    margin-top: auto;
+}
+
 .price {
     font-size: 1.25rem;
     font-weight: 700;
     color: white;
-    margin-top: auto;
-    /* Push to bottom if content varies */
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
+}
+
+.originalPrice {
+    font-size: 0.9rem;
+    color: #888;
+    text-decoration: line-through;
+    font-weight: 400;
 }
 
 .currency {

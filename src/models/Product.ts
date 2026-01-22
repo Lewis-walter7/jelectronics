@@ -26,9 +26,22 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    minPrice: {
+        type: Number,
+        default: 0,
+    },
+    maxPrice: {
+        type: Number,
+        default: 0,
+    },
+    brand: {
+        type: String,
+        required: false,
+        default: null,
+    },
     category: {
         type: String,
-        enum: ['Phones', 'Laptops', 'Tablets', 'Accessories', 'TVs', 'Other'],
+        enum: ['Phones', 'Tablets', 'Laptops', 'Audio', 'Gaming', 'Smartwatches', 'Accessories', 'TVs', 'Computing', 'Cameras', 'Networking', 'Storage', 'Other'],
         required: [true, 'Please specify a category.'],
     },
     variants: [{
@@ -44,6 +57,10 @@ const ProductSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
         required: [true, 'Please provide an image URL.'],
+    },
+    images: {
+        type: [String],
+        default: [],
     },
     stock: {
         type: Number,

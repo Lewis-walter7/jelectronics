@@ -7,6 +7,7 @@ import ReviewsList from '@/components/review/ReviewsList';
 import ReviewForm from '@/components/review/ReviewForm';
 import BundleDeals from '@/components/product/BundleDeals';
 import ProductStructuredData from '@/components/product/ProductStructuredData';
+import ImageGallery from '@/components/product/ImageGallery';
 
 import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
@@ -24,6 +25,11 @@ async function getProductBySlug(slug: string) {
         const product = await Product.findById(id).lean();
         if (!product) return null;
 
+        // Robust image fallback logic
+        const rawImages = (product.images || []).filter((url: string) => url && url.trim() !== '');
+        const primaryImage = product.imageUrl || product.image;
+        const finalImages = rawImages.length > 0 ? rawImages : (primaryImage ? [primaryImage] : []);
+
         let bundledItems: any[] = [];
         if (product.bundledProducts && product.bundledProducts.length > 0) {
             bundledItems = await Product.find({
@@ -35,7 +41,8 @@ async function getProductBySlug(slug: string) {
             ...product,
             _id: product._id.toString(),
             id: product._id.toString(),
-            image: product.imageUrl || product.image || '',
+            image: primaryImage || '',
+            images: finalImages,
             bundledProducts: bundledItems.map((bp: any) => ({
                 _id: bp._id.toString(),
                 name: bp.name,
@@ -88,6 +95,7 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
     }
 
     const displayProduct = product;
+    const displayFeatures = displayProduct.features ? Object.entries(displayProduct.features) : [];
 
     return (
         <>
@@ -104,15 +112,10 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
 
             <div className={`container ${styles.wrapper}`}>
                 <div className={styles.imageSection}>
-                    {displayProduct.image ? (
-                        <div className={styles.imageWrapper}>
-                            <img src={displayProduct.image} alt={displayProduct.name} className={styles.productImage} style={{ width: '100%', height: 'auto', borderRadius: '12px' }} />
-                        </div>
-                    ) : (
-                        <div className={styles.imagePlaceholder}>
-                            📷
-                        </div>
-                    )}
+                    <ImageGallery
+                        images={displayProduct.images}
+                        name={displayProduct.name}
+                    />
                 </div>
 
                 <div className={styles.detailsSection}>
@@ -122,6 +125,17 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
                     <p className={styles.description}>
                         {displayProduct.description}
                     </p>
+
+                    {displayFeatures.length > 0 && (
+                        <div className={styles.featuresList}>
+                            {displayFeatures.map(([key, value]) => (
+                                <div key={key} className={styles.featureRow}>
+                                    <span className={styles.featureLabel}>{key}:</span>
+                                    <span className={styles.featureValue}>{value as string}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     <ProductViewer product={displayProduct} />
 

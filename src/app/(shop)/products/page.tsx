@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 
 interface SearchParams {
     search?: string;
+    brand?: string;
     minPrice?: string;
     maxPrice?: string;
     color?: string;
@@ -14,7 +15,7 @@ interface SearchParams {
 
 async function getProducts(params: SearchParams) {
     await connectToDatabase();
-    const { search, minPrice, maxPrice, color, storage } = params;
+    const { search, brand, minPrice, maxPrice, color, storage } = params;
 
     console.log('--- getProducts Debug ---');
     console.log('Params:', params);
@@ -36,9 +37,15 @@ async function getProducts(params: SearchParams) {
             $or: [
                 { name: searchRegex },
                 { description: searchRegex },
-                { category: searchRegex }
+                { category: searchRegex },
+                { brand: searchRegex }
             ]
         });
+    }
+
+    // Brand Filter
+    if (brand) {
+        andConditions.push({ brand: { $regex: new RegExp(`^${brand}$`, 'i') } });
     }
 
     // Price Filter
@@ -93,7 +100,10 @@ async function getProducts(params: SearchParams) {
         category: doc.category,
         imageUrl: doc.imageUrl || doc.image || '',
         slug: doc.slug,
-        features: doc.features || {}
+        features: doc.features || {},
+        minPrice: doc.minPrice,
+        maxPrice: doc.maxPrice,
+        images: doc.images || []
     }));
 }
 

@@ -13,15 +13,18 @@ export default function ProductFilters() {
     const initialMax = searchParams.get('maxPrice') || '';
     const initialColors = searchParams.get('color')?.split(',') || [];
     const initialStorage = searchParams.get('storage')?.split(',') || [];
+    const initialBrand = searchParams.get('brand') || '';
 
     const [minPrice, setMinPrice] = useState(initialMin);
     const [maxPrice, setMaxPrice] = useState(initialMax);
     const [selectedColors, setSelectedColors] = useState<string[]>(initialColors);
     const [selectedStorage, setSelectedStorage] = useState<string[]>(initialStorage);
+    const [selectedBrand, setSelectedBrand] = useState(initialBrand);
 
-    // Common options (could be fetched dynamically, but hardcoded for now)
+    // Common options
     const colorOptions = ['Black', 'White', 'Silver', 'Gold', 'Blue', 'Green', 'Purple', 'Grey', 'Titanium'];
     const storageOptions = ['64GB', '128GB', '256GB', '512GB', '1TB'];
+    const brandOptions = ['Apple', 'Samsung', 'Infinix', 'Tecno', 'Oppo', 'Vivo', 'Xiaomi', 'Sony', 'Dell', 'HP'];
 
     // Debounce price update
     useEffect(() => {
@@ -34,7 +37,7 @@ export default function ProductFilters() {
     // Apply filters immediately for checkboxes
     useEffect(() => {
         applyFilters();
-    }, [selectedColors, selectedStorage]);
+    }, [selectedColors, selectedStorage, selectedBrand]);
 
     const applyFilters = () => {
         const params = new URLSearchParams(searchParams.toString());
@@ -50,6 +53,9 @@ export default function ProductFilters() {
 
         if (selectedStorage.length > 0) params.set('storage', selectedStorage.join(','));
         else params.delete('storage');
+
+        if (selectedBrand) params.set('brand', selectedBrand);
+        else params.delete('brand');
 
         // Reset page to 1 if we had pagination (optional future proofing)
         // params.delete('page'); 
@@ -128,6 +134,30 @@ export default function ProductFilters() {
                     >
                         ✕
                     </button>
+                </div>
+
+                {/* Brand Filter */}
+                <div style={{ marginBottom: '2rem' }}>
+                    <h4 style={{ fontSize: '0.9rem', color: '#888', marginBottom: '1rem', textTransform: 'uppercase' }}>Brand</h4>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {brandOptions.map(brand => (
+                            <label key={brand} style={{
+                                display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+                                fontSize: '0.85rem', color: selectedBrand === brand ? 'white' : '#aaa',
+                                background: selectedBrand === brand ? '#333' : 'transparent',
+                                padding: '4px 8px', borderRadius: '4px', border: '1px solid #333'
+                            }}>
+                                <input
+                                    type="radio"
+                                    name="brand"
+                                    checked={selectedBrand === brand}
+                                    onChange={() => setSelectedBrand(selectedBrand === brand ? '' : brand)}
+                                    style={{ display: 'none' }}
+                                />
+                                {brand}
+                            </label>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Price Filter */}
@@ -225,6 +255,7 @@ export default function ProductFilters() {
                             setMaxPrice('');
                             setSelectedColors([]);
                             setSelectedStorage([]);
+                            setSelectedBrand('');
                             router.push(pathname);
                             setIsOpen(false);
                         }}

@@ -27,14 +27,14 @@ export default function Footer() {
                         <span className={styles.icon}>📞</span>
                         <div>
                             <strong style={{ display: 'block', color: 'white' }}>Call Us:</strong>
-                            <span>+254 700 123 456</span>
+                            <span>+254 728 882 910</span>
                         </div>
                     </div>
                     <div className={styles.infoItem}>
                         <span className={styles.icon}>💬</span>
                         <div>
                             <strong style={{ display: 'block', color: 'white' }}>WhatsApp:</strong>
-                            <span>+254 700 123 456</span>
+                            <span>+254 728 882 910</span>
                         </div>
                     </div>
                     <div className={styles.infoItem}>

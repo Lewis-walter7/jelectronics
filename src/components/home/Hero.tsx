@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,7 +8,6 @@ import styles from './Hero.module.css';
 export default function Hero() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
-    const carouselRef = useRef<HTMLDivElement>(null);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,48 +16,73 @@ export default function Hero() {
         }
     };
 
-    const scrollCarousel = (direction: 'left' | 'right') => {
-        if (carouselRef.current) {
-            const scrollAmount = 300;
-            const newScrollLeft = carouselRef.current.scrollLeft + (direction === 'right' ? scrollAmount : -scrollAmount);
-            carouselRef.current.scrollTo({
-                left: newScrollLeft,
-                behavior: 'smooth'
-            });
-        }
-    };
-
     const categories = [
         {
             name: 'Smartphones',
             slug: 'phones',
-            image: '/phones.png'
-        },
-        {
-            name: 'Tablets & iPads',
-            slug: 'tablets',
-            image: '/featuredphones.png'
-        },
-        {
-            name: 'Audio',
-            slug: 'audio',
-            image: '/audio.png'
+            image: '/phones.png',
+            subCategories: [
+                { name: 'Samsung Phones', slug: 'phones?brand=samsung' },
+                { name: 'iPhone', slug: 'phones?brand=apple' },
+                { name: 'Tecno Phones', slug: 'phones?brand=tecno' },
+                { name: 'Google Pixel Phones', slug: 'phones?brand=pixel' },
+            ]
         },
         {
             name: 'Gaming',
             slug: 'gaming',
-            image: '/gaming.png'
+            image: '/gaming.png',
+            subCategories: [
+                { name: 'Accessories', slug: 'gaming?type=accessories' },
+                { name: 'Gaming Console', slug: 'gaming?type=console' },
+                { name: 'Gaming Controllers', slug: 'gaming?type=controller' },
+                { name: 'Gaming Headsets', slug: 'gaming?type=headset' },
+            ]
         },
         {
-            name: 'Wearables',
+            name: 'Audio',
+            slug: 'audio',
+            image: '/audio.png',
+            subCategories: [
+                { name: 'Buds', slug: 'audio?type=buds' },
+                { name: 'Headphones', slug: 'audio?type=headphones' },
+                { name: 'Speakers', slug: 'audio?type=speakers' },
+                { name: 'Soundbar', slug: 'audio?type=soundbar' },
+            ]
+        },
+        {
+            name: 'Smartwatch',
             slug: 'wearables',
-            image: '/wearables.png'
+            image: '/wearables.png',
+            subCategories: [
+                { name: 'Smartwatches', slug: 'wearables?type=smartwatch' },
+                { name: 'Apple Watch', slug: 'wearables?brand=apple' },
+                { name: 'Galaxy Watch', slug: 'wearables?brand=samsung' },
+                { name: 'Smart Bands', slug: 'wearables?type=smartband' },
+            ]
         },
         {
             name: 'Accessories',
             slug: 'accessories',
-            image: '/accessories.png'
-        }
+            image: '/accessories.png',
+            subCategories: [
+                { name: 'Apple Accessories', slug: 'accessories?brand=apple' },
+                { name: 'Samsung Accessories', slug: 'accessories?brand=samsung' },
+                { name: 'Chargers', slug: 'accessories?type=chargers' },
+                { name: 'Powerbank', slug: 'accessories?type=powerbank' },
+            ]
+        },
+        {
+            name: 'Storage',
+            slug: 'accessories',
+            image: '/drive.webp',
+            subCategories: [
+                { name: 'Flash Drives', slug: 'accessories?type=flashdrives' },
+                { name: 'Hard Drives', slug: 'accessories?type=harddisks' },
+                { name: 'Memory Cards', slug: 'accessories?type=memorycards' },
+                { name: 'USB Hubs', slug: 'accessories?type=usbhubs' },
+            ]
+        },
     ];
 
     return (
@@ -78,48 +102,37 @@ export default function Hero() {
                     <button type="submit" className={styles.mobileSearchBtn}>🔍</button>
                 </form>
 
-                <span className={styles.badge}>New Stock Arrived</span>
-
                 <h2 className={styles.categoriesTitle}>Shop by Category</h2>
 
-                <div className={styles.carouselWrapper}>
-                    <button
-                        className={`${styles.carouselBtn} ${styles.carouselBtnLeft}`}
-                        onClick={() => scrollCarousel('left')}
-                        aria-label="Scroll left"
-                    >
-                        ‹
-                    </button>
-
-                    <div className={styles.categoriesGrid} ref={carouselRef}>
-                        {categories.map((category) => (
-                            <Link
-                                key={category.slug}
-                                href={`/products/${category.slug}`}
-                                className={styles.categoryCard}
-                            >
+                <div className={styles.categoriesGrid}>
+                    {categories.map((category) => (
+                        <div key={category.slug} className={styles.categoryCard}>
+                            <div className={styles.categoryImageWrapper}>
                                 <Image
                                     src={category.image}
                                     alt={category.name}
-                                    fill
+                                    width={120}
+                                    height={120}
                                     className={styles.categoryImage}
-                                    sizes="(max-width: 768px) 50vw, 20vw"
-                                    priority={true} // Prioritize hero images for LCP
                                 />
-                                <div className={styles.categoryOverlay}>
-                                    <span className={styles.categoryName}>{category.name}</span>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-
-                    <button
-                        className={`${styles.carouselBtn} ${styles.carouselBtnRight}`}
-                        onClick={() => scrollCarousel('right')}
-                        aria-label="Scroll right"
-                    >
-                        ›
-                    </button>
+                            </div>
+                            <div className={styles.categoryContent}>
+                                <h3 className={styles.categoryName}>{category.name}</h3>
+                                <ul className={styles.subCategoryList}>
+                                    {category.subCategories.map((sub, idx) => (
+                                        <li key={idx}>
+                                            <Link href={`/products/${sub.slug}`} className={styles.subCategoryLink}>
+                                                {sub.name}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link href={`/products/${category.slug}`} className={styles.shopMoreLink}>
+                                    Shop More &gt;&gt;
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>

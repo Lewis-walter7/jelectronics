@@ -21,9 +21,12 @@ interface ProductCardProps {
     slug?: string;
     averageRating?: number;
     reviewCount?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    images?: string[];
 }
 
-export default function ProductCard({ _id, name, description, price, salePrice, imageUrl, category, slug, averageRating = 0, reviewCount = 0 }: ProductCardProps) {
+export default function ProductCard({ _id, name, description, price, salePrice, imageUrl, category, slug, averageRating = 0, reviewCount = 0, minPrice = 0, maxPrice = 0, images = [] }: ProductCardProps) {
     const { addToCart } = useCart();
     const { compareList, addToCompare, removeFromCompare } = useCompare();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -89,7 +92,13 @@ export default function ProductCard({ _id, name, description, price, salePrice, 
     return (
         <Link href={productLink} className={styles.card}>
             <div className={styles.imageWrapper}>
-                <Image src={imageUrl} alt={name} fill className={styles.image} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                <Image
+                    src={imageUrl || images[0]}
+                    alt={name}
+                    fill
+                    className={styles.image}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
                 {salePrice && <span className={styles.badge}>SALE</span>}
 
                 <button
@@ -159,13 +168,21 @@ export default function ProductCard({ _id, name, description, price, salePrice, 
                 <h3 className={styles.title}>{name}</h3>
                 <div className={styles.priceRow}>
                     <div className={styles.prices}>
-                        <span className={styles.price}>
-                            KES {(salePrice || price).toLocaleString()}
-                        </span>
-                        {salePrice && (
-                            <span className={styles.originalPrice}>
-                                KES {price.toLocaleString()}
+                        {(minPrice > 0 && maxPrice > 0) ? (
+                            <span className={styles.price}>
+                                KES {minPrice.toLocaleString()} - KES {maxPrice.toLocaleString()}
                             </span>
+                        ) : (
+                            <>
+                                <span className={styles.price}>
+                                    KES {(salePrice || price).toLocaleString()}
+                                </span>
+                                {(salePrice && salePrice < price) && (
+                                    <span className={styles.originalPrice}>
+                                        KES {price.toLocaleString()}
+                                    </span>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

@@ -213,6 +213,18 @@
     color: var(--color-primary);
 }
 
+/* Bridge the gap to the sub-menu */
+.menuItem:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 15px;
+    /* Enough to bridge margin-left: 2px and then some */
+    height: 100%;
+    z-index: 10;
+}
+
 /* Submenu */
 .subMenu {
     position: absolute;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import CustomImageUploader from '@/components/admin/CustomImageUploader';
+import MultiImageUploader from '@/components/admin/MultiImageUploader';
 
 interface FeatureObj {
     key: string;
@@ -17,11 +17,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
     const [formData, setFormData] = useState({
         name: '',
+        brand: '',
         price: '',
+        minPrice: '',
+        maxPrice: '',
         category: 'Phones',
         description: '',
         stock: '',
-        image: ''
+        image: '',
+        images: [] as string[]
     });
 
     // Features State
@@ -55,11 +59,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     const p = data.data;
                     setFormData({
                         name: p.name,
+                        brand: p.brand || '',
                         price: p.price,
+                        minPrice: p.minPrice ? p.minPrice.toString() : '',
+                        maxPrice: p.maxPrice ? p.maxPrice.toString() : '',
                         category: p.category,
                         description: p.description,
                         stock: p.stock,
-                        image: p.imageUrl || p.image || ''
+                        image: p.imageUrl || p.image || '',
+                        images: (p.images && p.images.length > 0) ? p.images : (p.imageUrl || p.image ? [p.imageUrl || p.image] : [])
                     });
 
                     setIsFeatured(p.isFeatured || false);
@@ -135,8 +143,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 if (lower.includes('display') || lower.includes('screen') || lower.includes('inch')) key = 'Display';
                 else if (lower.includes('battery') || lower.includes('mah')) key = 'Battery';
                 else if (lower.includes('camera') || lower.includes('mp ') || lower.includes('lens')) key = 'Camera';
-                else if (lower.includes('ram') || lower.includes('rom') || lower.includes('storage') || lower.includes('gb')) key = 'Memory';
-                else if (lower.includes('processor') || lower.includes('cpu') || lower.includes('chipset') || lower.includes('hz')) key = 'Processor';
+                else if (lower.includes('ram') || lower.includes('gb') || lower.includes('storage') || lower.includes('rom')) {
+                    if (lower.includes('internal')) key = 'Storage';
+                    else if (lower.includes('expandable')) key = 'Expandable Storage';
+                    else key = 'Memory';
+                }
+                else if (lower.includes('processor') || lower.includes('cpu') || lower.includes('chipset') || lower.includes('gpu') || lower.includes('hz')) key = 'Processor';
                 else if (lower.includes('android') || lower.includes('ios')) key = 'OS';
                 else if (lower.includes('sim') || lower.includes('dual')) key = 'SIM';
                 else if (lower.includes('network') || lower.includes('5g') || lower.includes('4g')) key = 'Network';
@@ -163,8 +175,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             'Model Name', 'Model Numbers', 'Network Technology', 'Launch Announced', 'Launch Status', 'Release Date',
             'Body Dimensions', 'Body Weight', 'Body Build', 'SIM Options', 'Body Protection', 'Dimensions', 'Weight', 'Build', 'Water Resistance',
             'Display Type', 'Display Size', 'Display Resolution', 'Secondary Display', 'Display', 'Brightness',
-            'Platform OS', 'Platform Chipset', 'Platform CPU', 'Platform GPU', 'Operating System', 'Processor (Chipset)', 'Cellular Modem',
-            'Memory Card Slot', 'Memory Internal', 'RAM', 'Storage Options',
+            'Platform OS', 'Platform Chipset', 'Platform CPU', 'Platform GPU', 'Operating System', 'Processor (Chipset)', 'Cellular Modem', 'Chipset', 'CPU', 'GPU',
+            'Memory Card Slot', 'Memory Internal', 'RAM', 'Storage Options', 'Internal Storage', 'Expandable Storage', 'Storage',
             'Main Camera Triple', 'Main Camera Quad', 'Main Camera Dual', 'Main Camera Single', 'Main Camera',
             'Main Camera Features', 'Main Camera Video',
             'Selfie Camera Single', 'Selfie Camera Dual', 'Selfie Camera Features', 'Selfie Camera Video', 'Front Camera',
@@ -195,7 +207,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
             if (matchedKey) {
                 flushPending();
-                pendingKey = matchedKey;
+                // Custom Mappings
+                if (matchedKey.toLowerCase() === 'internal storage') pendingKey = 'Storage';
+                else pendingKey = matchedKey;
                 let remainder = cleanLine.substring(matchedKey.length).trim();
                 if (remainder.startsWith(':')) remainder = remainder.substring(1).trim();
                 pendingValue = remainder;
@@ -274,6 +288,12 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         setList([...list, { key: '', value: '' }]);
     };
 
+    const insertListRow = (list: FeatureObj[], setList: (l: FeatureObj[]) => void, index: number) => {
+        const newList = [...list];
+        newList.splice(index + 1, 0, { key: '', value: '' });
+        setList(newList);
+    };
+
     const removeListRow = (list: FeatureObj[], setList: (l: FeatureObj[]) => void, index: number) => {
         setList(list.filter((_, i) => i !== index));
     };
@@ -334,7 +354,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             const payload = {
                 _id: id,
                 ...formData,
-                imageUrl: formData.image,
+                brand: formData.brand.trim() || null,
                 features: featuresObject,
                 specifications: specsObject,
                 isFeatured,
@@ -347,7 +367,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     price: Number(v.price) || 0,
                     stock: Number(v.stock) || 0
                 })) : [],
-                status: 'published' // Always publish when updating
+                status: 'published', // Always publish when updating
+                minPrice: Number(formData.minPrice) || 0,
+                maxPrice: Number(formData.maxPrice) || 0,
+                imageUrl: formData.images[0] || formData.image,
+                images: formData.images
             };
 
             const res = await fetch('/api/products', {
@@ -452,11 +476,20 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                                     <button
                                         type="button"
                                         onClick={() => removeListRow(list, setList, index)}
-                                        style={{ background: '#333', border: 'none', color: 'white', borderRadius: '6px', padding: '0 15px', cursor: 'pointer' }}
+                                        style={{ background: '#333', border: 'none', color: '#ff4444', borderRadius: '6px', padding: '0 15px', cursor: 'pointer' }}
+                                        title="Remove Row"
                                     >
                                         ✕
                                     </button>
                                 )}
+                                <button
+                                    type="button"
+                                    onClick={() => insertListRow(list, setList, index)}
+                                    style={{ background: '#222', border: '1px solid #444', color: '#ff6b00', borderRadius: '6px', padding: '0 15px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                    title="Insert Row Below"
+                                >
+                                    + Insert
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -502,8 +535,16 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
             <form onSubmit={handleSubmit} style={{ background: '#0a0a0a', padding: '2rem', borderRadius: '12px', border: '1px solid #222' }}>
 
-                <label style={{ ...labelStyle, marginTop: 0 }}>Product Name</label>
-                <input name="name" required value={formData.name} placeholder="e.g. iPhone 15 Pro" style={inputStyle} onChange={handleChange} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div>
+                        <label style={labelStyle}>Product Name</label>
+                        <input name="name" required value={formData.name} placeholder="e.g. iPhone 15 Pro" style={inputStyle} onChange={handleChange} />
+                    </div>
+                    <div>
+                        <label style={labelStyle}>Brand</label>
+                        <input name="brand" value={formData.brand} placeholder="e.g. Apple" style={inputStyle} onChange={handleChange} />
+                    </div>
+                </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div>
@@ -513,6 +554,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <div>
                         <label style={labelStyle}>Stock Quantity</label>
                         <input name="stock" type="number" required value={formData.stock} placeholder="10" style={inputStyle} onChange={handleChange} />
+                    </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+                    <div>
+                        <label style={{ ...labelStyle, marginTop: 0 }}>Min Price (Optional - for range)</label>
+                        <input name="minPrice" type="number" value={formData.minPrice} placeholder="15000" style={inputStyle} onChange={handleChange} />
+                    </div>
+                    <div>
+                        <label style={{ ...labelStyle, marginTop: 0 }}>Max Price (Optional - for range)</label>
+                        <input name="maxPrice" type="number" value={formData.maxPrice} placeholder="21000" style={inputStyle} onChange={handleChange} />
                     </div>
                 </div>
 
@@ -555,10 +607,18 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 <label style={labelStyle}>Category</label>
                 <select name="category" value={formData.category} style={inputStyle} onChange={handleChange}>
                     <option value="Phones">Phones</option>
-                    <option value="Laptops">Laptops</option>
                     <option value="Tablets">Tablets</option>
+                    <option value="Laptops">Laptops</option>
+                    <option value="Audio">Audio</option>
+                    <option value="Gaming">Gaming</option>
+                    <option value="Smartwatches">Smartwatches</option>
                     <option value="Accessories">Accessories</option>
                     <option value="TVs">TVs</option>
+                    <option value="Computing">Computing</option>
+                    <option value="Cameras">Cameras</option>
+                    <option value="Networking">Networking</option>
+                    <option value="Storage">Storage</option>
+                    <option value="Other">Other</option>
                 </select>
 
                 <label style={labelStyle}>Description</label>
@@ -666,17 +726,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     'Display Type: AMOLED\nDimensions: 159.2 x 75 x 12.9 mm'
                 )}
 
-                <label style={labelStyle}>Product Image</label>
+                <label style={labelStyle}>Product Images</label>
 
                 <div style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>
-                    <CustomImageUploader
-                        value={formData.image}
-                        onChange={(url) => setFormData({ ...formData, image: url })}
+                    <MultiImageUploader
+                        value={formData.images}
+                        onChange={(urls) => setFormData({ ...formData, images: urls })}
                     />
                 </div>
 
                 <details style={{ marginTop: '1rem' }}>
-                    <summary style={{ fontSize: '0.8rem', color: '#666', cursor: 'pointer' }}>Or use external URL</summary>
+                    <summary style={{ fontSize: '0.8rem', color: '#666', cursor: 'pointer' }}>Or use external URL (Main Image)</summary>
                     <input name="image" placeholder="https://..." value={formData.image} style={inputStyle} onChange={handleChange} />
                 </details>
 

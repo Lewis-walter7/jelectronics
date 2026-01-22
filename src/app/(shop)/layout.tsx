@@ -1,6 +1,7 @@
 import Navbar from '@/components/layout/Navbar';
 import CategoryNav from '@/components/layout/CategoryNav';
 import Footer from '@/components/layout/Footer';
+import WhatsAppButton from '@/components/layout/WhatsAppButton';
 import { CartProvider } from '@/context/CartContext';
 import { CompareProvider } from '@/context/CompareContext';
 import { WishlistProvider } from '@/context/WishlistContext';
@@ -23,6 +24,7 @@ export default function ShopLayout({
                             {children}
                         </main>
                         <Footer />
+                        <WhatsAppButton />
                         <ComparisonFloatingBar />
                     </RecentlyViewedProvider>
                 </CompareProvider>
