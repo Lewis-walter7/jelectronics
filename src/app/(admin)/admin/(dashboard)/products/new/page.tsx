@@ -9,6 +9,14 @@ interface FeatureObj {
     value: string;
 }
 
+const PHONE_VARIANTS = [
+    "4/64GB", "4/128GB",
+    "6/128GB",
+    "8/128GB", "8/256GB",
+    "12/256GB", "12/512GB",
+    "16/512GB", "16/1TB", "16/2TB"
+];
+
 export default function AddProductPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -153,6 +161,8 @@ export default function AddProductPage() {
                 // Infer key from content keywords
                 const lower = cleanLine.toLowerCase();
                 if (lower.includes('display') || lower.includes('screen') || lower.includes('inch')) key = 'Display';
+                else if (lower.includes('model')) key = 'Model';
+                else if (lower.includes('release') || lower.includes('announced')) key = 'Release Date';
                 else if (lower.includes('battery') || lower.includes('mah')) key = 'Battery';
                 else if (lower.includes('camera') || lower.includes('mp ') || lower.includes('lens')) key = 'Camera';
                 else if (lower.includes('ram') || lower.includes('gb') || lower.includes('storage') || lower.includes('rom')) {
@@ -164,6 +174,7 @@ export default function AddProductPage() {
                 else if (lower.includes('android') || lower.includes('ios')) key = 'OS';
                 else if (lower.includes('sim') || lower.includes('dual')) key = 'SIM';
                 else if (lower.includes('network') || lower.includes('5g') || lower.includes('4g')) key = 'Network';
+                else if (lower.includes('connectivity') || lower.includes('wlan') || lower.includes('wifi') || lower.includes('bluetooth') || lower.includes('nfc')) key = 'Connectivity';
                 else if (lower.includes('sensor') || lower.includes('fingerprint')) key = 'Sensors';
             }
 
@@ -429,91 +440,128 @@ export default function AddProductPage() {
         rawText: string,
         setRawText: (s: string) => void,
         handleParse: () => void,
-        placeholder: string
-    ) => (
-        <div style={{ marginTop: '2rem', borderTop: '1px solid #222', paddingTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <label style={{ ...labelStyle, marginTop: 0, marginBottom: 0, color: '#ff6b00' }}>{title}</label>
-                <button
-                    type="button"
-                    onClick={() => setPasteMode(!pasteMode)}
-                    style={{ fontSize: '0.85rem', color: '#ff6b00', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
-                >
-                    {pasteMode ? 'Back to Manual' : '✨ Smart Paste'}
-                </button>
-            </div>
+        placeholder: string,
+        parser: (text: string) => FeatureObj[]
+    ) => {
+        const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, index: number) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                const textarea = e.currentTarget;
+                const cursorPosition = textarea.selectionStart;
+                const text = list[index].value;
 
-            {pasteMode ? (
-                <div style={{ background: '#111', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #333' }}>
-                    <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '0.5rem' }}>
-                        Paste your block here. Supported format: <b>"Key: Value"</b>
-                    </p>
-                    <textarea
-                        value={rawText}
-                        onChange={(e) => setRawText(e.target.value)}
-                        rows={8}
-                        placeholder={placeholder}
-                        style={{ ...inputStyle, fontFamily: 'monospace', fontSize: '0.9rem' }}
-                    />
-                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                        <button
-                            type="button"
-                            onClick={handleParse}
-                            style={{ padding: '8px 16px', background: '#ccc', color: 'black', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-                        >
-                            Auto-Fill
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {list.map((item, index) => (
-                            <div key={index} style={{ display: 'flex', gap: '10px' }}>
-                                <input
-                                    placeholder="Key (e.g. Speed)"
-                                    value={item.key}
-                                    onChange={(e) => handleListChange(list, setList, index, 'key', e.target.value)}
-                                    style={{ ...inputStyle, marginTop: 0, flex: 1 }}
-                                />
-                                <textarea
-                                    placeholder="Value"
-                                    value={item.value}
-                                    onChange={(e) => handleListChange(list, setList, index, 'value', e.target.value)}
-                                    style={{ ...inputStyle, marginTop: 0, flex: 2, minHeight: '38px', resize: 'vertical', fontFamily: 'inherit' }}
-                                />
-                                {list.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => removeListRow(list, setList, index)}
-                                        style={{ background: '#333', border: 'none', color: '#ff4444', borderRadius: '6px', padding: '0 15px', cursor: 'pointer' }}
-                                        title="Remove Row"
-                                    >
-                                        ✕
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    onClick={() => insertListRow(list, setList, index)}
-                                    style={{ background: '#222', border: '1px solid #444', color: '#ff6b00', borderRadius: '6px', padding: '0 15px', cursor: 'pointer', fontSize: '0.8rem' }}
-                                    title="Insert Row Below"
-                                >
-                                    + Insert
-                                </button>
-                            </div>
-                        ))}
-                    </div>
+                const leftPart = text.substring(0, cursorPosition).trim();
+                const rightPart = text.substring(cursorPosition).trim();
+
+                // If right part is empty, just add a new empty row
+                if (!rightPart) {
+                    insertListRow(list, setList, index);
+                    return;
+                }
+
+                // Parse the right part
+                const newRows = parser(rightPart);
+
+                // If parser returns nothing (e.g. empty or no match), just split raw
+                const rowsToInsert = newRows.length > 0 ? newRows : [{ key: '', value: rightPart }];
+
+                const newList = [...list];
+                // Update current row
+                newList[index].value = leftPart;
+
+                // Insert new rows
+                newList.splice(index + 1, 0, ...rowsToInsert);
+
+                setList(newList);
+            }
+        };
+
+        return (
+            <div style={{ marginTop: '2rem', borderTop: '1px solid #222', paddingTop: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <label style={{ ...labelStyle, marginTop: 0, marginBottom: 0, color: '#ff6b00' }}>{title}</label>
                     <button
                         type="button"
-                        onClick={() => addListRow(list, setList)}
-                        style={{ marginTop: '1rem', background: 'transparent', border: '1px dashed #444', color: '#aaa', padding: '10px', width: '100%', borderRadius: '6px', cursor: 'pointer' }}
+                        onClick={() => setPasteMode(!pasteMode)}
+                        style={{ fontSize: '0.85rem', color: '#ff6b00', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
                     >
-                        + Add Row
+                        {pasteMode ? 'Back to Manual' : '✨ Smart Paste'}
                     </button>
-                </>
-            )}
-        </div>
-    );
+                </div>
+
+                {pasteMode ? (
+                    <div style={{ background: '#111', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #333' }}>
+                        <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '0.5rem' }}>
+                            Paste your block here. Supported format: <b>"Key: Value"</b>
+                        </p>
+                        <textarea
+                            value={rawText}
+                            onChange={(e) => setRawText(e.target.value)}
+                            rows={8}
+                            placeholder={placeholder}
+                            style={{ ...inputStyle, fontFamily: 'monospace', fontSize: '0.9rem' }}
+                        />
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                            <button
+                                type="button"
+                                onClick={handleParse}
+                                style={{ padding: '8px 16px', background: '#ccc', color: 'black', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                                Auto-Fill
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {list.map((item, index) => (
+                                <div key={index} style={{ display: 'flex', gap: '10px' }}>
+                                    <input
+                                        placeholder="Key (e.g. Speed)"
+                                        value={item.key}
+                                        onChange={(e) => handleListChange(list, setList, index, 'key', e.target.value)}
+                                        style={{ ...inputStyle, marginTop: 0, flex: 1 }}
+                                    />
+                                    <textarea
+                                        placeholder="Value"
+                                        value={item.value}
+                                        onChange={(e) => handleListChange(list, setList, index, 'value', e.target.value)}
+                                        onKeyDown={(e) => handleKeyDown(e, index)}
+                                        style={{ ...inputStyle, marginTop: 0, flex: 2, minHeight: '38px', resize: 'vertical', fontFamily: 'inherit' }}
+                                    />
+                                    {list.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeListRow(list, setList, index)}
+                                            style={{ background: '#333', border: 'none', color: '#ff4444', borderRadius: '6px', padding: '0 15px', cursor: 'pointer' }}
+                                            title="Remove Row"
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => insertListRow(list, setList, index)}
+                                        style={{ background: '#222', border: '1px solid #444', color: '#ff6b00', borderRadius: '6px', padding: '0 15px', cursor: 'pointer', fontSize: '0.8rem' }}
+                                        title="Insert Row Below"
+                                    >
+                                        + Insert
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => addListRow(list, setList)}
+                            style={{ marginTop: '1rem', background: 'transparent', border: '1px dashed #444', color: '#aaa', padding: '10px', width: '100%', borderRadius: '6px', cursor: 'pointer' }}
+                        >
+                            + Add Row
+                        </button>
+                    </>
+                )}
+            </div>
+        );
+    };
 
     return (
         <div style={{ padding: '2rem', color: 'white', maxWidth: '800px' }}>
@@ -645,6 +693,7 @@ export default function AddProductPage() {
                                         placeholder="Name (e.g. 256GB)"
                                         value={v.name}
                                         onChange={(e) => handleVariantChange(i, 'name', e.target.value)}
+                                        list={formData.category === 'Phones' ? "phone-variants" : undefined}
                                         style={{ ...inputStyle, marginTop: 0 }}
                                     />
                                     <input
@@ -691,7 +740,8 @@ export default function AddProductPage() {
                     rawTextFeatures,
                     setRawTextFeatures,
                     handleParseFeatures,
-                    'Resolution: 4K\nBattery: 5000mAh'
+                    'Resolution: 4K\nBattery: 5000mAh',
+                    parseKeyFeatures
                 )}
 
                 {/* Specifications Section */}
@@ -704,7 +754,8 @@ export default function AddProductPage() {
                     rawTextSpecs,
                     setRawTextSpecs,
                     handleParseSpecs,
-                    'Display Type: AMOLED\nDimensions: 159.2 x 75 x 12.9 mm'
+                    'Display Type: AMOLED\nDimensions: 159.2 x 75 x 12.9 mm',
+                    parseTechnicalSpecs
                 )}
 
                 <label style={labelStyle}>Product Images</label>
@@ -738,7 +789,13 @@ export default function AddProductPage() {
                     </button>
                 </div>
 
+                <datalist id="phone-variants">
+                    {PHONE_VARIANTS.map(variant => (
+                        <option key={variant} value={variant} />
+                    ))}
+                </datalist>
+
             </form>
-        </div>
+        </div >
     );
 }
