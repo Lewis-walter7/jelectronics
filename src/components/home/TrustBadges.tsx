@@ -40,16 +40,19 @@ export default function TrustBadges() {
         <section className={styles.section}>
             <div className="container">
                 <h2 className={styles.heading}>Why Choose JElectronics</h2>
-                <div className={styles.grid}>
-                    {badges.map((badge, index) => (
-                        <div key={index} className={styles.badge}>
-                            <div className={styles.icon}>{badge.icon}</div>
-                            <div className={styles.content}>
-                                <h3 className={styles.title}>{badge.title}</h3>
-                                <p className={styles.description}>{badge.description}</p>
+                <div className={styles.marqueeContainer}>
+                    <div className={styles.track}>
+                        {/* Render badges twice for seamless loop */}
+                        {[...badges, ...badges].map((badge, index) => (
+                            <div key={index} className={styles.badge}>
+                                <div className={styles.icon}>{badge.icon}</div>
+                                <div className={styles.content}>
+                                    <h3 className={styles.title}>{badge.title}</h3>
+                                    <p className={styles.description}>{badge.description}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>

@@ -2,6 +2,7 @@ import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
 import ProductList from '@/components/product/ProductList';
 import ProductFilters from '@/components/product/ProductFilters';
+import Pagination from '@/components/ui/Pagination'; // Import Pagination
 import styles from '../products.module.css';
 
 interface FilterParams {
@@ -11,10 +12,16 @@ interface FilterParams {
     maxPrice?: string;
     color?: string;
     storage?: string;
+    page?: string;
+    [key: string]: string | undefined; // Allow dynamic filters
 }
 
 async function getProductsByCategory(category: string, filters: FilterParams) {
     await connectToDatabase();
+
+    const pageNumber = parseInt(filters.page || '1', 10);
+    const limit = 25; // 5 rows * 5 columns
+    const skip = (pageNumber - 1) * limit;
 
     // Normalize category for display
     const categoryRegex = new RegExp(`^${category}$`, 'i');
@@ -29,6 +36,20 @@ async function getProductsByCategory(category: string, filters: FilterParams) {
             ]
         }
     ];
+
+    // Helper to add feature filter
+    const addFeatureFilter = (urlKey: string, dbKeys: string[]) => {
+        if (filters[urlKey]) {
+            const values = filters[urlKey]!.split(',');
+            const valueRegexes = values.map(v => new RegExp(v.trim(), 'i'));
+
+            const orConditions = dbKeys.map(key => ({
+                [`features.${key}`]: { $in: valueRegexes }
+            }));
+
+            andConditions.push({ $or: orConditions });
+        }
+    };
 
     // Brand filter
     if (filters.brand) {
@@ -54,6 +75,16 @@ async function getProductsByCategory(category: string, filters: FilterParams) {
             ]
         });
     }
+
+    // Dynamic Filters Mappings
+    addFeatureFilter('ram', ['RAM', 'Ram', 'Memory']);
+    addFeatureFilter('screenSize', ['Screen Size', 'Display Size', 'Screen']);
+    addFeatureFilter('audioType', ['Type', 'Audio Type', 'Headphone Type']);
+    addFeatureFilter('connectivity', ['Connectivity', 'Connection']);
+    addFeatureFilter('platform', ['Platform', 'Console']);
+    addFeatureFilter('gameType', ['Type', 'Genre']);
+    addFeatureFilter('wearableType', ['Type']);
+    addFeatureFilter('strap', ['Strap Material', 'Strap']);
 
     // Price Filter
     if (filters.minPrice || filters.maxPrice) {
@@ -92,7 +123,16 @@ async function getProductsByCategory(category: string, filters: FilterParams) {
         });
     }
 
-    const productsDocs = await Product.find({ $and: andConditions }).sort({ createdAt: -1 }).lean();
+    const finalQuery = { $and: andConditions };
+
+    const totalProducts = await Product.countDocuments(finalQuery);
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    const productsDocs = await Product.find(finalQuery)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
 
     const products = productsDocs.map((doc: any) => ({
         _id: doc._id.toString(),
@@ -113,7 +153,12 @@ async function getProductsByCategory(category: string, filters: FilterParams) {
     const filterTitle = filters.brand ? ` - ${filters.brand.charAt(0).toUpperCase() + filters.brand.slice(1)}` :
         filters.type ? ` - ${filters.type.charAt(0).toUpperCase() + filters.type.slice(1)}` : '';
 
-    return { products, categoryName: `${categoryName}${filterTitle}` };
+    return {
+        products,
+        categoryName: `${categoryName}${filterTitle}`,
+        totalPages,
+        currentPage: pageNumber
+    };
 }
 
 export default async function CategoryPage({
@@ -132,14 +177,17 @@ export default async function CategoryPage({
     const maxPrice = typeof resolvedSearchParams.maxPrice === 'string' ? resolvedSearchParams.maxPrice : undefined;
     const color = typeof resolvedSearchParams.color === 'string' ? resolvedSearchParams.color : undefined;
     const storage = typeof resolvedSearchParams.storage === 'string' ? resolvedSearchParams.storage : undefined;
+    const page = typeof resolvedSearchParams.page === 'string' ? resolvedSearchParams.page : undefined;
 
-    const { products, categoryName } = await getProductsByCategory(category, {
+    const { products, categoryName, totalPages, currentPage } = await getProductsByCategory(category, {
+        ...resolvedSearchParams,
         brand,
         type,
         minPrice,
         maxPrice,
         color,
-        storage
+        storage,
+        page
     });
 
     return (
@@ -162,6 +210,7 @@ export default async function CategoryPage({
                     ) : (
                         <div className="products-grid-wrapper">
                             <ProductList products={products} />
+                            <Pagination currentPage={currentPage} totalPages={totalPages} />
                         </div>
                     )}
                 </main>

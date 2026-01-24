@@ -1,8 +1,8 @@
 .footer {
-    background: #0a0a0a;
+    background: var(--color-surface);
     /* Darker background for footer */
     padding: 3rem 0 1rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--color-surface-hover);
     margin-top: auto;
     font-size: 0.95rem;
 }
@@ -13,13 +13,13 @@
     /* Responsive columns */
     gap: 2rem;
     padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-surface-hover);
 }
 
 .col h4 {
     font-size: 1.1rem;
     margin-bottom: 1.2rem;
-    color: white;
+    color: var(--color-text-main);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -71,12 +71,40 @@
 }
 
 .payTag {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-background);
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.8rem;
+    color: var(--color-text-main);
+    border: 1px solid var(--color-surface-hover);
+}
+
+.socials {
+    display: flex;
+    gap: 12px;
+}
+
+.socialIcon {
+    width: 36px;
+    height: 36px;
+    background: var(--color-background);
+    color: var(--color-text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: 1px solid var(--color-surface-hover);
+}
+
+.socialIcon:hover {
+    background: var(--color-primary);
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
 }
 
 .bottomBar {

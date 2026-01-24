@@ -43,6 +43,10 @@ async function getProductBySlug(slug: string) {
             id: product._id.toString(),
             image: primaryImage || '',
             images: finalImages,
+            variants: (product.variants || []).map((v: any) => ({
+                ...v,
+                _id: v._id ? v._id.toString() : undefined
+            })),
             bundledProducts: bundledItems.map((bp: any) => ({
                 _id: bp._id.toString(),
                 name: bp.name,

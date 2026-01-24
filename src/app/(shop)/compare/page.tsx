@@ -21,6 +21,7 @@ export default function ComparePage() {
     const { addToCart } = useCart();
     const [detailedProducts, setDetailedProducts] = useState<DetailedProduct[]>([]);
     const [loading, setLoading] = useState(false);
+    const [showDiffOnly, setShowDiffOnly] = useState(false);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -35,7 +36,7 @@ export default function ComparePage() {
                 const res = await fetch(`/api/products?ids=${ids}`);
                 const data = await res.json();
                 if (data.success) {
-                    // Sort to match order of compareList for consistency
+                    const keyNormalizationMap = new Map<string, string>();
                     // Sort to match order of compareList for consistency
                     const sorted = compareList.map(item => {
                         const product = data.data.find((p: any) => p._id === item._id);
@@ -47,6 +48,7 @@ export default function ComparePage() {
                             const ALIASES: Record<string, string> = {
                                 'Display Type': 'Display',
                                 'Screen': 'Display',
+                                'Display Size': 'Display',
                                 'Main Camera Features': 'Main Camera',
                                 'Camera Features': 'Main Camera',
                                 'Rear Camera': 'Main Camera',
@@ -54,16 +56,53 @@ export default function ComparePage() {
                                 'Processor Type': 'Processor',
                                 'RAM Information': 'RAM',
                                 'Storage Support': 'Storage',
+                                'Internal Storage': 'Storage',
+                                'Storage Specs': 'Storage',
+                                'Card Slot': 'Memory Card',
+                                'Model Name': 'Model',
+                                'Sensor': 'Sensors',
                                 'Available Colors': 'Colors',
                                 'Body Weight': 'Weight',
+                                'Sim': 'Sim Card',
+                                'SIM': 'Sim Card',
+                                'SimCard': 'Sim Card',
+                                'Simcard': 'Sim Card',
+                                'Fast Charging': 'Charging',
+                                'Fastcharging': 'Charging',
+                                'Body Size': 'Dimensions',
+                                'Size': 'Dimensions',
+                                'Body Dimensions': 'Dimensions',
+                                'Dimensions': 'Dimensions',
+                                'Operating System': 'OS',
+                                'Network': 'Network Technology',
+                                'Technology': 'Network Technology',
+                                'Battery': 'Battery',
+                                'Battery Type': 'Battery',
+                                'Battery Capacity': 'Battery',
                             };
 
                             Object.entries(product.specifications).forEach(([key, val]) => {
                                 const cleanKey = key.trim();
-                                const targetKey = ALIASES[cleanKey] || cleanKey;
-                                // If multiple source keys map to same target, join them
+                                if (!cleanKey) return;
+
+                                // 1. Case-insensitive lookup in ALIASES
+                                const lowerKey = cleanKey.toLowerCase();
+                                const foundAliasKey = Object.keys(ALIASES).find(k => k.toLowerCase() === lowerKey);
+                                let targetKey = foundAliasKey ? ALIASES[foundAliasKey] : cleanKey;
+
+                                // 2. Cross-product normalization (ensure "Network technology" and "Network Technology" merge)
+                                const lowerTarget = targetKey.toLowerCase();
+                                if (keyNormalizationMap.has(lowerTarget)) {
+                                    targetKey = keyNormalizationMap.get(lowerTarget)!;
+                                } else {
+                                    keyNormalizationMap.set(lowerTarget, targetKey);
+                                }
+
                                 if (normalizedSpecs[targetKey]) {
-                                    normalizedSpecs[targetKey] += ` / ${val}`;
+                                    // Avoid duplicating exact same value
+                                    if (!normalizedSpecs[targetKey].includes(val as string)) {
+                                        normalizedSpecs[targetKey] += ` / ${val}`;
+                                    }
                                 } else {
                                     normalizedSpecs[targetKey] = val as string;
                                 }
@@ -96,22 +135,60 @@ export default function ComparePage() {
         );
     }
 
-    // Collect all unique keys from all products
+    // --- Smart Logic Helpers ---
+
+    const parseNumber = (val: string): number => {
+        if (!val) return 0;
+        // Extract first number found. Handle "8GB", "5000mAh", "KES 100,000"
+        const clean = val.replace(/,/g, '');
+        const match = clean.match(/(\d+(\.\d+)?)/);
+        return match ? parseFloat(match[0]) : 0;
+    };
+
+    const getWinnerIndex = (key: string, values: string[]): number | null => {
+        // Heuristics for numeric comparison
+        const numericKeys = ['RAM', 'Storage', 'Battery', 'Camera', 'MP', 'Hz', 'Refresh Rate'];
+        const isNumeric = numericKeys.some(k => key.includes(k));
+
+        // Price: Lower is better
+        const isPrice = key === 'Price';
+
+        if (isPrice) {
+            const numbers = values.map(parseNumber);
+            const validNumbers = numbers.filter(n => n > 0);
+            if (validNumbers.length < 2) return null; // Need comparison
+            const min = Math.min(...validNumbers);
+            // Return index of ALL matches (could be tie) - simplifies to first winner for now
+            // Better: highlighting handled in rendering if checking value match
+            return numbers.findIndex(n => n === min);
+        }
+
+        if (isNumeric) {
+            const numbers = values.map(parseNumber);
+            const validNumbers = numbers.filter(n => n > 0);
+            if (validNumbers.length < 2) return null;
+            const max = Math.max(...validNumbers);
+            return numbers.findIndex(n => n === max);
+        }
+
+        return null; // Qualitative keys (Display type, OS) - no automatic winner
+    };
+
+    const isRowDifferent = (values: (string | undefined)[]): boolean => {
+        const first = values[0];
+        return values.some(v => v !== first);
+    };
+
+    // Collect keys
     const allKeys = new Set<string>();
     detailedProducts.forEach(p => {
-        if (p.specifications) {
-            Object.keys(p.specifications).forEach(key => allKeys.add(key));
-        }
+        if (p.specifications) Object.keys(p.specifications).forEach(key => allKeys.add(key));
     });
-    // Convert to Array
     const keysArray = Array.from(allKeys);
-
-    // Prioritize specific keys
-    const priorityKeys = ['Display', 'Processor', 'RAM', 'Storage', 'Camera', 'Battery', 'OS'];
+    const priorityKeys = ['Model', 'Network Technology', 'SIM Card', 'Display', 'Processor', 'RAM', 'Storage', 'Memory Card', 'Main Camera', 'Selfie Camera', 'Battery', 'Charging', 'Sensors', 'Dimensions', 'Weight', 'Colors', 'OS'];
     const sortedKeys = keysArray.sort((a, b) => {
         const indexA = priorityKeys.findIndex(k => a.includes(k));
         const indexB = priorityKeys.findIndex(k => b.includes(k));
-
         if (indexA !== -1 && indexB !== -1) return indexA - indexB;
         if (indexA !== -1) return -1;
         if (indexB !== -1) return 1;
@@ -120,36 +197,52 @@ export default function ComparePage() {
 
     return (
         <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 20px' }}>
-            <h1 style={{ color: 'white', marginBottom: '30px', textAlign: 'center' }}>Product Comparison</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+                <h1 style={{ color: 'white', margin: 0 }}>Product Comparison</h1>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ccc', cursor: 'pointer', background: '#222', padding: '8px 16px', borderRadius: '8px' }}>
+                    <input
+                        type="checkbox"
+                        checked={showDiffOnly}
+                        onChange={(e) => setShowDiffOnly(e.target.checked)}
+                        style={{ accentColor: '#0ea5e9' }}
+                    />
+                    Show Differences Only
+                </label>
+            </div>
 
             {loading ? (
-                <div style={{ color: '#888', textAlign: 'center' }}>Loading specs...</div>
+                <div style={{ color: '#888', textAlign: 'center', padding: '50px' }}>Loading specs...</div>
             ) : (
-                <div style={{ overflowX: 'auto', background: '#111', borderRadius: '16px', padding: '20px', border: '1px solid #222' }}>
+                <div style={{ overflowX: 'auto', background: '#111', borderRadius: '16px', border: '1px solid #222', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', color: '#ccc' }}>
                         <thead>
                             <tr>
-                                <th style={{ textAlign: 'left', padding: '15px', borderBottom: '1px solid #333', minWidth: '150px' }}></th>
+                                <th style={{
+                                    textAlign: 'left', padding: '20px', borderBottom: '1px solid #333', minWidth: '150px',
+                                    background: '#111', position: 'sticky', left: 0, zIndex: 10
+                                }}></th>
                                 {detailedProducts.map(product => (
-                                    <th key={product._id} style={{ padding: '15px', borderBottom: '1px solid #333', minWidth: '250px', position: 'relative' }}>
+                                    <th key={product._id} style={{
+                                        padding: '20px', borderBottom: '1px solid #333', minWidth: '280px', position: 'relative', background: '#111', verticalAlign: 'top'
+                                    }}>
                                         <button
                                             onClick={() => removeFromCompare(product._id)}
-                                            style={{ position: 'absolute', top: '5px', right: '5px', background: 'transparent', border: 'none', color: '#666', cursor: 'pointer', fontSize: '1.2rem' }}
+                                            style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', cursor: 'pointer', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                         >
                                             &times;
                                         </button>
-                                        <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 10px' }}>
+                                        <div style={{ position: 'relative', width: '100%', height: '180px', marginBottom: '15px' }}>
                                             <Image src={product.imageUrl} alt={product.name} fill style={{ objectFit: 'contain' }} />
                                         </div>
-                                        <Link href={`/product/${product._id}`} style={{ color: 'white', textDecoration: 'none', fontSize: '1.1rem', display: 'block', marginBottom: '5px' }}>
+                                        <Link href={`/products/${product.category}/${product.slug}`} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', display: 'block', marginBottom: '8px', lineHeight: '1.4' }}>
                                             {product.name}
                                         </Link>
-                                        <div style={{ color: '#0ea5e9', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                        <div style={{ color: '#0ea5e9', fontWeight: '800', fontSize: '1.3rem' }}>
                                             KES {product.price.toLocaleString()}
                                         </div>
                                         <button
                                             onClick={() => addToCart({ ...product, id: product._id, quantity: 1 })}
-                                            style={{ marginTop: '10px', background: '#222', color: 'white', border: '1px solid #444', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
+                                            style={{ marginTop: '15px', width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}
                                         >
                                             Add to Cart
                                         </button>
@@ -158,30 +251,48 @@ export default function ComparePage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* General Category */}
                             <tr>
-                                <td style={{ padding: '15px', borderBottom: '1px solid #222', fontWeight: 'bold', color: '#888' }}>Category</td>
+                                <td style={{ padding: '15px 20px', borderBottom: '1px solid #222', fontWeight: 'bold', color: '#888', background: '#161616', position: 'sticky', left: 0 }}>Category</td>
                                 {detailedProducts.map(product => (
-                                    <td key={product._id} style={{ padding: '15px', borderBottom: '1px solid #222', textAlign: 'center' }}>
+                                    <td key={product._id} style={{ padding: '15px 20px', borderBottom: '1px solid #222', textAlign: 'center' }}>
                                         {product.category}
                                     </td>
                                 ))}
                             </tr>
 
-                            {/* Dynamic Specs */}
-                            {sortedKeys.map(key => (
-                                <tr key={key}>
-                                    <td style={{ padding: '15px', borderBottom: '1px solid #222', fontWeight: 'bold', color: '#888' }}>{key}</td>
-                                    {detailedProducts.map(product => {
-                                        const value = product.specifications?.[key];
-                                        return (
-                                            <td key={product._id} style={{ padding: '15px', borderBottom: '1px solid #222', textAlign: 'center', whiteSpace: 'pre-wrap' }}>
-                                                {value || '-'}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
+                            {sortedKeys.map(key => {
+                                const values = detailedProducts.map(p => p.specifications?.[key] || '');
+                                const isDiff = isRowDifferent(values);
+
+                                if (showDiffOnly && !isDiff) return null;
+
+                                const winnerIndex = getWinnerIndex(key, values);
+
+                                return (
+                                    <tr key={key} style={{ background: isDiff ? 'rgba(14, 165, 233, 0.03)' : 'transparent' }}>
+                                        <td style={{
+                                            padding: '15px 20px', borderBottom: '1px solid #222', fontWeight: '600', color: '#aaa',
+                                            background: '#161616', position: 'sticky', left: 0, textTransform: 'capitalize'
+                                        }}>
+                                            {key}
+                                        </td>
+                                        {detailedProducts.map((product, idx) => {
+                                            const value = product.specifications?.[key];
+                                            const isWinner = winnerIndex === idx && isDiff;
+
+                                            return (
+                                                <td key={product._id} style={{
+                                                    padding: '15px 20px', borderBottom: '1px solid #222', textAlign: 'center', whiteSpace: 'pre-wrap', lineHeight: '1.6',
+                                                    color: isWinner ? '#4ade80' : '#ccc', fontWeight: isWinner ? '700' : '400',
+                                                    background: isWinner ? 'rgba(74, 222, 128, 0.05)' : 'transparent'
+                                                }}>
+                                                    {value || '-'}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

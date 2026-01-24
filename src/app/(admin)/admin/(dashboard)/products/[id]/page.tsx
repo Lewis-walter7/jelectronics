@@ -14,8 +14,25 @@ const PHONE_VARIANTS = [
     "6/128GB",
     "8/128GB", "8/256GB",
     "12/256GB", "12/512GB",
+    "12/256GB", "12/512GB",
     "16/512GB", "16/1TB", "16/2TB"
 ];
+
+const SUBCATEGORY_OPTIONS: Record<string, string[]> = {
+    'Phones': ['New', 'Refurbished', 'Foldable'],
+    'Tablets': ['iPad', 'Android', 'Graphics Tablet'],
+    'Laptops': ['Gaming', 'Ultrabook', 'MacBook', 'Workstation'],
+    'Audio': ['Headphones', 'Earphones', 'Earbuds', 'Speakers', 'Soundbars', 'Microphones'],
+    'GamingDeals': ['Console', 'Games', 'Accessories'],
+    'Gaming': ['Console', 'Games', 'Accessories'],
+    'Smartwatches': ['Apple Watch', 'Galaxy Watch', 'Fitness Tracker', 'Band'],
+    'Accessories': ['Chargers', 'Powerbanks', 'Cables', 'Screen Protectors', 'Phone Covers', 'Gimbals', 'Memory Cards', 'Mouse', 'Modems'],
+    'TVs': ['Smart TV', 'Android TV', 'OLED', 'QLED'],
+    'Computing': ['Desktops', 'Monitors', 'Printers', 'Networking'],
+    'Cameras': ['DSLR', 'Mirrorless', 'Action', 'Drones'],
+    'Storage': ['Hard Disks', 'SSD', 'Flash Drives', 'Memory Cards'],
+    'Networking': ['Routers', 'Switches', 'Access Points']
+};
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -281,7 +298,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target.name === 'category') {
+            setFormData({ ...formData, category: e.target.value, subcategory: '' });
+        } else {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        }
     };
 
     // Generic list handler
@@ -673,13 +694,18 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 </select>
 
                 <label style={labelStyle}>Subcategory (Optional)</label>
-                <input
+                <select
                     name="subcategory"
                     value={formData.subcategory}
-                    placeholder="e.g. Buds, Earphones, Speakers"
                     style={inputStyle}
                     onChange={handleChange}
-                />
+                >
+                    <option value="">Select Subcategory</option>
+                    {(SUBCATEGORY_OPTIONS[formData.category] || []).map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                    <option value="Other">Other</option>
+                </select>
 
                 <label style={labelStyle}>Description</label>
                 <textarea name="description" value={formData.description} rows={4} style={inputStyle} onChange={handleChange} />

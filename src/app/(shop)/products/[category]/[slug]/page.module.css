@@ -40,7 +40,7 @@
 .title {
     font-size: 2.5rem;
     margin-bottom: var(--spacing-sm);
-    color: white;
+    color: var(--color-text-main);
 }
 
 .price {
@@ -59,8 +59,8 @@
 
 .featuresList {
     margin-bottom: var(--spacing-md);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--color-surface-hover);
+    border-bottom: 1px solid var(--color-surface-hover);
     padding: var(--spacing-sm) 0;
 }
 
@@ -114,7 +114,7 @@
 .meta {
     margin-top: auto;
     padding-top: var(--spacing-md);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--color-surface-hover);
     color: var(--color-text-muted);
     font-size: 0.9rem;
 }
@@ -129,23 +129,23 @@
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     text-align: left;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-surface-hover);
     padding-bottom: 1rem;
-    color: white;
+    color: var(--color-text-main);
 }
 
 .specsContainer {
-    background: #111;
+    background: var(--color-surface);
     border-radius: 12px;
     padding: 2rem;
-    border: 1px solid #222;
+    border: 1px solid var(--color-surface-hover);
     max-width: 1000px;
 }
 
 .specRow {
     display: grid;
     grid-template-columns: 30% 1fr;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid var(--color-surface-hover);
     padding: 1rem 0;
 }
 
@@ -154,12 +154,12 @@
 }
 
 .specLabel {
-    color: #888;
+    color: var(--color-text-muted);
     font-weight: 500;
 }
 
 .specValue {
-    color: #e0e0e0;
+    color: var(--color-text-main);
     white-space: pre-wrap;
     line-height: 1.6;
 }
@@ -185,16 +185,16 @@
         grid-template-columns: 1fr;
         /* Stack vertically */
         gap: 0.25rem;
-        background: #111;
+        background: var(--color-surface);
         padding: 1rem;
         margin-bottom: 0.5rem;
         border-radius: 8px;
-        border: 1px solid #222;
+        border: 1px solid var(--color-surface-hover);
     }
 
     .specLabel {
         font-size: 0.75rem;
-        color: #888;
+        color: var(--color-text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         font-weight: 600;
@@ -202,6 +202,6 @@
 
     .specValue {
         font-size: 0.95rem;
-        color: #fff;
+        color: var(--color-text-main);
     }
 }

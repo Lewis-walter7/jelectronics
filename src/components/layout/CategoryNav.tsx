@@ -10,7 +10,7 @@ export default function CategoryNav() {
         { name: 'Mobile Accessories', href: '/products/accessories' },
         { name: 'Audio', href: '/products/audio' },
         { name: 'Gaming', href: '/products/gaming' },
-        { name: 'Storage', href: '/products/accessories?type=harddisks' },
+        { name: 'Storage', href: '/products/storage' },
         { name: 'Tablets', href: '/products/tablets' },
         { name: 'Content Creator Kit', href: '/products/accessories?type=gimbals' },
     ];

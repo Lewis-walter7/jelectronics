@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Use navigation for App Router
 import styles from './Navbar.module.css';
 import { useCart } from '@/context/CartContext';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function Navbar() {
     const { totalItems } = useCart();
+    const { theme, toggleTheme } = useTheme();
     const router = useRouter();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'categories' | 'menu'>('categories');
@@ -33,11 +35,12 @@ export default function Navbar() {
             subItems: [
                 { name: 'Apple iPhone', slug: 'phones?brand=apple' },
                 { name: 'Samsung Phones', slug: 'phones?brand=samsung' },
+                { name: 'Pixel Phones', slug: 'phones?brand=pixel' },
+                { name: 'Nothing Phones', slug: 'phones?brand=nothing' },
                 { name: 'Infinix Phones', slug: 'phones?brand=infinix' },
                 { name: 'Tecno Phones', slug: 'phones?brand=tecno' },
                 { name: 'Xiaomi Phones', slug: 'phones?brand=xiaomi' },
                 { name: 'Motorola Phones', slug: 'phones?brand=motorola' },
-                { name: 'Nothing Phones', slug: 'phones?brand=nothing' },
                 { name: 'OnePlus Phones', slug: 'phones?brand=oneplus' },
                 { name: 'Blackview Phones', slug: 'phones?brand=blackview' },
                 { name: 'Huawei Phones', slug: 'phones?brand=huawei' },
@@ -46,7 +49,6 @@ export default function Navbar() {
                 { name: 'Itel Phones', slug: 'phones?brand=itel' },
                 { name: 'Oppo Phones', slug: 'phones?brand=oppo' },
                 { name: 'Philips Phones', slug: 'phones?brand=philips' },
-                { name: 'Pixel Phones', slug: 'phones?brand=pixel' },
                 { name: 'Poco Phones', slug: 'phones?brand=poco' },
             ]
         },
@@ -103,17 +105,28 @@ export default function Navbar() {
             ]
         },
         {
+            name: 'Storage',
+            slug: 'storage',
+            subItems: [
+                { name: 'Hard Disks', slug: 'storage?type=harddisks' },
+                { name: 'SSD', slug: 'storage?type=ssd' },
+                { name: 'Flash Drives', slug: 'storage?type=flashdrives' },
+                { name: 'Memory Cards', slug: 'storage?type=memorycards' },
+            ]
+        },
+        {
             name: 'Mobile Accessories',
             slug: 'accessories',
             subItems: [
                 { name: 'Chargers', slug: 'accessories?type=chargers' },
-                { name: 'Flash Drives', slug: 'accessories?type=flashdrives' },
                 { name: 'Handheld Gimbals', slug: 'accessories?type=gimbals' },
-                { name: 'Hard Disks', slug: 'accessories?type=harddisks' },
-                { name: 'Memory Cards', slug: 'accessories?type=memorycards' },
                 { name: 'Modems', slug: 'accessories?type=modems' },
                 { name: 'Mouse', slug: 'accessories?type=mouse' },
                 { name: 'Phone Covers', slug: 'accessories?type=covers' },
+                { name: 'Powerbanks', slug: 'accessories?type=powerbanks' },
+                { name: 'Cables', slug: 'accessories?type=cables' },
+                { name: 'Screen Protectors', slug: 'accessories?type=screen-protectors' },
+                { name: 'Streamers', slug: 'accessories?type=streamers' },
             ]
         }
     ];
@@ -202,16 +215,34 @@ export default function Navbar() {
 
                     {/* RIGHT: Cart & Saved */}
                     <div className={styles.rightSection}>
+                        <button onClick={toggleTheme} className={styles.iconLink} title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
+                            <div className={styles.cartBtn}>
+                                {theme === 'light' ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                    </svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                    </svg>
+                                )}
+                            </div>
+                        </button>
                         <Link href="/wishlist" className={styles.iconLink}>
                             <div className={styles.cartBtn} title="My Wishlist">
-                                ❤️
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                </svg>
                                 <span className={styles.cartLabel}>Saved</span>
                             </div>
                         </Link>
 
                         <Link href="/checkout" className={styles.iconLink}>
                             <div className={styles.cartBtn} title="View Cart">
-                                🛒
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                                </svg>
                                 <span className={styles.cartLabel}>Cart</span>
                                 {totalItems > 0 && <span className={styles.cartCount}>{totalItems}</span>}
                             </div>
@@ -228,7 +259,22 @@ export default function Navbar() {
             ></div>
             <div className={`${styles.mobileMenuDrawer} ${isMobileMenuOpen ? styles.open : ''}`}>
                 <div className={styles.drawerHeader} style={{ padding: 0, flexDirection: 'column', alignItems: 'stretch' }}>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
+                        <button
+                            onClick={toggleTheme}
+                            style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', padding: '5px', display: 'flex', alignItems: 'center' }}
+                            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                        >
+                            {theme === 'light' ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            )}
+                        </button>
                         <button className={styles.closeBtn} onClick={() => setIsMobileMenuOpen(false)}>✕</button>
                     </div>
 

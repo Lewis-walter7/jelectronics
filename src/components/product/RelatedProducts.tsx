@@ -48,9 +48,9 @@ export default async function RelatedProducts({ currentCategory, currentId, curr
     }
 
     return (
-        <section className={styles.section} style={{ background: '#050505', paddingTop: '4rem' }}>
+        <section className={styles.section} style={{ background: 'var(--color-surface)', paddingTop: '4rem' }}>
             <div className="container">
-                <h2 className={styles.heading} style={{ textAlign: 'left', fontSize: '1.8rem', marginBottom: '2rem' }}>
+                <h2 className={styles.heading} style={{ textAlign: 'left', fontSize: '1.8rem', marginBottom: '2rem', color: 'var(--color-text-main)' }}>
                     You May Also Like
                 </h2>
                 <div className={styles.grid}>

@@ -1,3 +1,4 @@
+import Pagination from '@/components/ui/Pagination';
 import ProductList from '@/components/product/ProductList';
 import ProductFilters from '@/components/product/ProductFilters';
 import connectToDatabase from '@/lib/db';
@@ -11,14 +12,15 @@ interface SearchParams {
     maxPrice?: string;
     color?: string;
     storage?: string;
+    page?: string;
 }
 
 async function getProducts(params: SearchParams) {
     await connectToDatabase();
-    const { search, brand, minPrice, maxPrice, color, storage } = params;
-
-    console.log('--- getProducts Debug ---');
-    console.log('Params:', params);
+    const { search, brand, minPrice, maxPrice, color, storage, page } = params;
+    const pageNumber = parseInt(page || '1', 10);
+    const limit = 25; // 5 rows * 5 columns
+    const skip = (pageNumber - 1) * limit;
 
     const baseQuery = {
         $or: [
@@ -57,12 +59,10 @@ async function getProducts(params: SearchParams) {
         andConditions.push({ price: priceQuery });
     }
 
-    // Color Filter (Matches if product.colors contains ANY of the selected colors OR features match)
+    // Color Filter
     if (color) {
         const colors = color.split(',');
-        // Case insensitive regex match for flexibility
         const colorRegexes = colors.map(c => new RegExp(c.trim(), 'i'));
-
         andConditions.push({
             $or: [
                 { colors: { $in: colorRegexes } },
@@ -73,7 +73,7 @@ async function getProducts(params: SearchParams) {
         });
     }
 
-    // Storage Filter (Matches variants OR features)
+    // Storage Filter
     if (storage) {
         const storages = storage.split(',');
         const storageRegexes = storages.map(s => new RegExp(s.trim(), 'i'));
@@ -88,11 +88,17 @@ async function getProducts(params: SearchParams) {
     }
 
     const finalQuery = { $and: andConditions };
-    console.log('Final Query:', JSON.stringify(finalQuery, null, 2));
 
-    const productsDocs = await Product.find(finalQuery).sort({ createdAt: -1 }).lean();
+    const totalProducts = await Product.countDocuments(finalQuery);
+    const totalPages = Math.ceil(totalProducts / limit);
 
-    return productsDocs.map((doc: any) => ({
+    const productsDocs = await Product.find(finalQuery)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+    const products = productsDocs.map((doc: any) => ({
         _id: doc._id.toString(),
         name: doc.name,
         description: doc.description,
@@ -106,13 +112,15 @@ async function getProducts(params: SearchParams) {
         maxPrice: doc.maxPrice,
         images: doc.images || []
     }));
+
+    return { products, totalPages, currentPage: pageNumber };
 }
 
 import styles from './products.module.css';
 
 export default async function ProductsValidPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const resolvedParams = await searchParams;
-    const products = await getProducts(resolvedParams);
+    const { products, totalPages, currentPage } = await getProducts(resolvedParams);
 
     return (
         <div className={`container ${styles.pageContainer}`}>
@@ -136,6 +144,7 @@ export default async function ProductsValidPage({ searchParams }: { searchParams
                     ) : (
                         <div className="products-grid-wrapper">
                             <ProductList products={products} />
+                            <Pagination currentPage={currentPage} totalPages={totalPages} />
                         </div>
                     )}
                 </main>

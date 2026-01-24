@@ -24,7 +24,7 @@ export default function Hero() {
             subCategories: [
                 { name: 'Samsung Phones', slug: 'phones?brand=samsung' },
                 { name: 'iPhone', slug: 'phones?brand=apple' },
-                { name: 'Tecno Phones', slug: 'phones?brand=tecno' },
+                { name: 'Nothing Phones', slug: 'phones?brand=nothing' },
                 { name: 'Google Pixel Phones', slug: 'phones?brand=pixel' },
             ]
         },

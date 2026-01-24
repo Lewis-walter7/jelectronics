@@ -1,36 +1,67 @@
 .section {
-    padding: 4rem 0;
-    background: #0a0a0a;
+    padding: 3rem 0;
+    background: var(--color-background);
+    overflow: hidden;
+    /* Hide overflow */
 }
 
 .heading {
     font-size: 2rem;
     font-weight: 700;
-    color: white;
+    color: var(--color-text-main);
     text-align: center;
     margin-bottom: 3rem;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+.marqueeContainer {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    /* Optional: Fade edges */
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.track {
+    display: flex;
     gap: 2rem;
+    width: fit-content;
+    animation: scroll 30s linear infinite;
+}
+
+/* Pause on hover for better UX */
+.track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+        /* Move half the length (since we duplicated) */
+    }
 }
 
 .badge {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
-    background: #111;
-    border: 1px solid #222;
+    background: var(--color-surface);
+    border: 1px solid var(--color-surface-hover);
     border-radius: 12px;
     padding: 1.5rem;
+    min-width: 300px;
+    /* Fixed width for consistency */
+    flex-shrink: 0;
     transition: all 0.3s ease;
 }
 
 .badge:hover {
     border-color: var(--color-primary);
     transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .icon {
@@ -45,27 +76,20 @@
 .title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: white;
-    margin: 0 0 0.5rem 0;
+    color: var(--color-text-main);
+    margin: 0 0 0.2rem 0;
 }
 
 .description {
     font-size: 0.9rem;
-    color: #888;
+    color: var(--color-text-muted);
     margin: 0;
-    line-height: 1.5;
-}
-
-@media (max-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
+    line-height: 1.4;
 }
 
 @media (max-width: 768px) {
     .section {
-        padding: 3rem 0;
+        padding: 2rem 0;
     }
 
     .heading {
@@ -73,24 +97,12 @@
         margin-bottom: 2rem;
     }
 
-    .grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
     .badge {
         padding: 1rem;
+        min-width: 250px;
     }
 
     .icon {
         font-size: 2rem;
-    }
-
-    .title {
-        font-size: 1rem;
-    }
-
-    .description {
-        font-size: 0.85rem;
     }
 }

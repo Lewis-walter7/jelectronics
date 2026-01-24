@@ -6,70 +6,62 @@ export default function Footer() {
         <footer className={styles.footer}>
             <div className={`container ${styles.grid}`}>
 
-                {/* Column 1: Products */}
+                {/* Column 1: Brand & About */}
                 <div className={styles.col}>
-                    <h4>Products</h4>
+                    <Link href="/" style={{ textDecoration: 'none' }}>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: '800', fontFamily: 'var(--font-display)', color: 'var(--color-text-main)', marginBottom: '1rem' }}>
+                            MobiTower
+                        </h3>
+                    </Link>
+                    <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+                        Your premium destination for the latest gadgets, accessories, and tech essentials in Nairobi. Quality guaranteed.
+                    </p>
+                    {/* <div className={styles.socials}>
+                        <a href="#" className={styles.socialIcon}>IG</a>
+                        <a href="#" className={styles.socialIcon}>FB</a>
+                        <a href="#" className={styles.socialIcon}>TW</a>
+                    </div> */}
+                </div>
+
+                {/* Column 2: Shop */}
+                <div className={styles.col}>
+                    <h4>Shop</h4>
                     <ul>
-                        <li><Link href="/products" className={styles.link}>All Products</Link></li>
                         <li><Link href="/products/phones" className={styles.link}>Smartphones</Link></li>
                         <li><Link href="/products/tablets" className={styles.link}>Tablets & iPads</Link></li>
                         <li><Link href="/products/audio" className={styles.link}>Audio</Link></li>
                         <li><Link href="/products/gaming" className={styles.link}>Gaming</Link></li>
-                        <li><Link href="/products/wearables" className={styles.link}>Wearables</Link></li>
+                        <li><Link href="/products/storage" className={styles.link}>Storage</Link></li>
                         <li><Link href="/products/accessories" className={styles.link}>Accessories</Link></li>
                     </ul>
                 </div>
 
-                {/* Column 2: Support */}
+                {/* Column 3: Support & Policies */}
                 <div className={styles.col}>
-                    <h4>Top-Notch Support</h4>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><Link href="/shipping-policy" className={styles.link}>Shipping Policy</Link></li>
+                        <li><Link href="/returns" className={styles.link}>Returns & Exchanges</Link></li>
+                        <li><Link href="/faq" className={styles.link}>FAQs</Link></li>
+                        <li><Link href="/contact" className={styles.link}>Contact Us</Link></li>
+                        <li><Link href="/privacy" className={styles.link}>Privacy Policy</Link></li>
+                    </ul>
+                </div>
+
+                {/* Column 4: Contact Us */}
+                <div className={styles.col}>
+                    <h4>Contact Us</h4>
                     <div className={styles.infoItem}>
-                        <span className={styles.icon}>📞</span>
-                        <div>
-                            <strong style={{ display: 'block', color: 'white' }}>Call Us:</strong>
-                            <span>+254 728 882 910</span>
-                        </div>
+                        <span className={styles.icon}>📍</span>
+                        <span>Bihi Towers, Basement 1, Shop B10<br />Moi Avenue, Nairobi CBD</span>
                     </div>
                     <div className={styles.infoItem}>
-                        <span className={styles.icon}>💬</span>
-                        <div>
-                            <strong style={{ display: 'block', color: 'white' }}>WhatsApp:</strong>
-                            <span>+254 728 882 910</span>
-                        </div>
+                        <span className={styles.icon}>📞</span>
+                        <a href="tel:+254728882910" className={styles.link} style={{ display: 'inline' }}>+254 728 882 910</a>
                     </div>
                     <div className={styles.infoItem}>
                         <span className={styles.icon}>✉️</span>
-                        <div>
-                            <strong style={{ display: 'block', color: 'white' }}>Email:</strong>
-                            <span>sales@mobitoweraccesories.com</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Column 3: Payments */}
-                <div className={styles.col}>
-                    <h4>Secure Payments</h4>
-                    <div className={styles.infoItem}>
-                        <span className={styles.icon}>🔒</span>
-                        <span>Pay securely on delivery within Nairobi.</span>
-                    </div>
-                    <div className={styles.paymentMethods}>
-                        <span className={styles.payTag}>M-Pesa</span>
-                        <span className={styles.payTag}>Cash</span>
-                    </div>
-                </div>
-
-                {/* Column 4: Location */}
-                <div className={styles.col}>
-                    <h4>Our Shop</h4>
-                    <div className={styles.infoItem}>
-                        <span className={styles.icon}>📍</span>
-                        <div style={{ lineHeight: '1.6' }}>
-                            <strong>MobiTower HQ</strong><br />
-                            Bihi Towers, Basement 1<br />
-                            Shop B10, Moi Avenue<br />
-                            Nairobi CBD
-                        </div>
+                        <a href="mailto:sales@mobitoweraccesories.com" className={styles.link} style={{ display: 'inline' }}>sales@mobitoweraccesories.com</a>
                     </div>
                 </div>
 
@@ -79,14 +71,13 @@ export default function Footer() {
             <div className={`container ${styles.bottomBar}`}>
                 <div className={styles.copyright}>
                     © {new Date().getFullYear()} MobiTower Accessories. All rights reserved.
+                    <span style={{ margin: '0 8px', opacity: 0.5 }}>|</span>
+                    Designed & Developed by <a href="https://lewisindusa.vercel.app" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>Lewis Indusa</a>
                 </div>
                 <div className={styles.bottomLinks}>
-                    <Link href="/about" className={styles.link}>About Us</Link>
-                    <Link href="/faq" className={styles.link}>FAQ</Link>
-                    <Link href="/delivery" className={styles.link}>Delivery Terms</Link>
-                    <Link href="/privacy" className={styles.link}>Privacy Policy</Link>
+                    <Link href="/terms" className={styles.link}>Terms of Service</Link>
                 </div>
             </div>
-        </footer>
+        </footer >
     );
 }

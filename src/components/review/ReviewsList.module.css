@@ -14,17 +14,17 @@
 .heading {
     font-size: 1.8rem;
     font-weight: 700;
-    color: white;
+    color: var(--color-text-main);
 }
 
 .overallRating {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: #111;
+    background: var(--color-surface);
     padding: 1rem 1.5rem;
     border-radius: 12px;
-    border: 1px solid #222;
+    border: 1px solid var(--color-surface-hover);
 }
 
 .ratingNumber {
@@ -35,7 +35,7 @@
 
 .reviewCount {
     font-size: 0.85rem;
-    color: #888;
+    color: var(--color-text-muted);
     margin-top: 0.25rem;
 }
 
@@ -43,7 +43,7 @@
 .noReviews {
     text-align: center;
     padding: 3rem 1rem;
-    color: #888;
+    color: var(--color-text-muted);
     font-size: 1rem;
 }
 
@@ -54,15 +54,15 @@
 }
 
 .reviewCard {
-    background: #111;
-    border: 1px solid #222;
+    background: var(--color-surface);
+    border: 1px solid var(--color-surface-hover);
     border-radius: 12px;
     padding: 1.5rem;
     transition: border-color 0.2s;
 }
 
 .reviewCard:hover {
-    border-color: #333;
+    border-color: var(--color-primary);
 }
 
 .reviewHeader {
@@ -75,7 +75,7 @@
 
 .reviewerName {
     font-weight: 600;
-    color: white;
+    color: var(--color-text-main);
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
@@ -87,6 +87,7 @@
     font-size: 0.75rem;
     color: #10b981;
     background: rgba(16, 185, 129, 0.1);
+    background: rgba(16, 185, 129, 0.1);
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: 500;
@@ -94,19 +95,19 @@
 
 .reviewDate {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--color-text-muted);
     white-space: nowrap;
 }
 
 .reviewTitle {
     font-size: 1.1rem;
     font-weight: 600;
-    color: white;
+    color: var(--color-text-main);
     margin-bottom: 0.5rem;
 }
 
 .reviewText {
-    color: #ccc;
+    color: var(--color-text-muted);
     line-height: 1.6;
     margin: 0;
 }
