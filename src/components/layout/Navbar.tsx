@@ -1,14 +1,13 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Use navigation for App Router
+import { useRouter } from 'next/navigation';
 import styles from './Navbar.module.css';
 import { useCart } from '@/context/CartContext';
-import { useTheme } from '@/context/ThemeContext';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function Navbar() {
     const { totalItems } = useCart();
-    const { theme, toggleTheme } = useTheme();
     const router = useRouter();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'categories' | 'menu'>('categories');
@@ -215,19 +214,8 @@ export default function Navbar() {
 
                     {/* RIGHT: Cart & Saved */}
                     <div className={styles.rightSection}>
-                        <button onClick={toggleTheme} className={styles.iconLink} title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
-                            <div className={styles.cartBtn}>
-                                {theme === 'light' ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                )}
-                            </div>
-                        </button>
+                        <ThemeToggle />
+
                         <Link href="/wishlist" className={styles.iconLink}>
                             <div className={styles.cartBtn} title="My Wishlist">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -260,21 +248,9 @@ export default function Navbar() {
             <div className={`${styles.mobileMenuDrawer} ${isMobileMenuOpen ? styles.open : ''}`}>
                 <div className={styles.drawerHeader} style={{ padding: 0, flexDirection: 'column', alignItems: 'stretch' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
-                        <button
-                            onClick={toggleTheme}
-                            style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', padding: '5px', display: 'flex', alignItems: 'center' }}
-                            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-                        >
-                            {theme === 'light' ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                </svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                </svg>
-                            )}
-                        </button>
+                        <div className="scale-75 origin-left">
+                            <ThemeToggle />
+                        </div>
                         <button className={styles.closeBtn} onClick={() => setIsMobileMenuOpen(false)}>✕</button>
                     </div>
 

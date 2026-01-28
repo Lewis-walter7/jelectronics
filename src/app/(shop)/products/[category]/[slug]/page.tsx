@@ -41,6 +41,7 @@ async function getProductBySlug(slug: string) {
             ...product,
             _id: product._id.toString(),
             id: product._id.toString(),
+            youtubeUrl: product.youtubeUrl || null,
             image: primaryImage || '',
             images: finalImages,
             variants: (product.variants || []).map((v: any) => ({
@@ -170,11 +171,31 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
                 </section>
             )}
 
+            {/* YouTube Video Section */}
+            {displayProduct.youtubeUrl && (
+                <section className={`container ${styles.videoSection}`} style={{ marginTop: '3rem' }}>
+                    <h2 className={styles.specsTitle}>Video Review</h2>
+                    <div className={styles.videoContainer}>
+                        <iframe
+                            src={`https://www.youtube.com/embed/${displayProduct.youtubeUrl.split('v=')[1]?.split('&')[0] || displayProduct.youtubeUrl.split('/').pop()}`}
+                            title="Product Video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </div>
+                </section>
+            )}
+
 
             {/* Reviews Section */}
-            <div id="reviews" className={`container`} style={{ marginTop: '4rem', marginBottom: '4rem', scrollMarginTop: '100px' }}>
-                <ReviewsList productId={displayProduct.id} />
-                <ReviewForm productId={displayProduct.id} />
+            <div id="reviews" className={`container ${styles.reviewsSection}`} style={{ marginTop: '4rem', marginBottom: '4rem', scrollMarginTop: '100px' }}>
+                <div className={styles.reviewsLeft}>
+                    <ReviewsList productId={displayProduct.id} />
+                </div>
+                <div className={styles.reviewsRight}>
+                    <ReviewForm productId={displayProduct.id} />
+                </div>
             </div>
 
             {/* Bundle Deals Section */}

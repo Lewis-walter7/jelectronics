@@ -91,17 +91,30 @@ export async function DELETE(request: Request) {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const ids = searchParams.get('ids'); // Expect comma-separated list
 
-    if (!id) {
-        return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
+    if (!id && !ids) {
+        return NextResponse.json({ success: false, error: 'ID or IDs are required' }, { status: 400 });
     }
 
     try {
-        const deletedProduct = await Product.findByIdAndDelete(id);
-        if (!deletedProduct) {
-            return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+        if (ids) {
+            const idList = ids.split(',').filter(Boolean);
+            if (idList.length > 0) {
+                const result = await Product.deleteMany({ _id: { $in: idList } });
+                return NextResponse.json({ success: true, count: result.deletedCount });
+            }
         }
-        return NextResponse.json({ success: true, data: {} });
+
+        if (id) {
+            const deletedProduct = await Product.findByIdAndDelete(id);
+            if (!deletedProduct) {
+                return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+            }
+            return NextResponse.json({ success: true, data: {} });
+        }
+
+        return NextResponse.json({ success: false, error: 'No valid IDs provided' }, { status: 400 });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to delete product' }, { status: 400 });
     }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './products.module.css';
+import toast from 'react-hot-toast';
 
 interface Product {
     _id: string;
@@ -20,6 +21,8 @@ export default function AdminProductsPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'published' | 'draft'>('published');
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchProducts();
@@ -47,29 +50,69 @@ export default function AdminProductsPage() {
             if (data.success) {
                 setProducts(data.data);
                 setFilteredProducts(data.data);
+                setSelectedIds(new Set()); // Reset selection on refresh
             }
         } catch (error) {
             console.error('Failed to fetch products', error);
+            toast.error('Failed to load products');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this product?')) return;
+    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            const allIds = new Set(filteredProducts.map(p => p._id));
+            setSelectedIds(allIds);
+        } else {
+            setSelectedIds(new Set());
+        }
+    };
 
+    const handleSelectOne = (id: string) => {
+        const newSelected = new Set(selectedIds);
+        if (newSelected.has(id)) {
+            newSelected.delete(id);
+        } else {
+            newSelected.add(id);
+        }
+        setSelectedIds(newSelected);
+    };
+
+    const handleDelete = async (ids: string[]) => {
+        if (!ids.length) return;
+
+        if (!confirm(`Are you sure you want to delete ${ids.length} product(s)?`)) return;
+
+        setIsDeleting(true);
         try {
-            const res = await fetch(`/api/products?id=${id}`, {
+            // If single ID, use comma separated param is fine as backend handles it, 
+            // but let's stick to the new 'ids' param for both single and multiple for consistency if we wanted,
+            // however backend supports both. Let's use 'ids' for bulk and 'id' for single for legacy safety or just 'ids' for all.
+            // Our backend now checks 'ids' first.
+
+            const res = await fetch(`/api/products?ids=${ids.join(',')}`, {
                 method: 'DELETE',
             });
+            const data = await res.json();
+
             if (res.ok) {
-                const updated = products.filter(p => p._id !== id);
-                setProducts(updated); // Effect will update filtered list
+                const updated = products.filter(p => !ids.includes(p._id));
+                setProducts(updated);
+
+                // Remove deleted IDs from selection
+                const newSelected = new Set(selectedIds);
+                ids.forEach(id => newSelected.delete(id));
+                setSelectedIds(newSelected);
+
+                toast.success(`Successfully deleted ${data.count || ids.length} product(s)`);
             } else {
-                alert('Failed to delete product');
+                toast.error(data.error || 'Failed to delete product(s)');
             }
         } catch (error) {
-            alert('Error deleting product');
+            toast.error('Error deleting product(s)');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -96,6 +139,24 @@ export default function AdminProductsPage() {
                     </div>
                 </div>
                 <div className={styles.actions}>
+                    {selectedIds.size > 0 && (
+                        <button
+                            onClick={() => handleDelete(Array.from(selectedIds))}
+                            disabled={isDeleting}
+                            style={{
+                                background: '#dc2626',
+                                color: 'white',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                marginRight: '10px'
+                            }}
+                        >
+                            {isDeleting ? 'Deleting...' : `Delete Selected (${selectedIds.size})`}
+                        </button>
+                    )}
+
                     <button
                         onClick={fetchProducts}
                         disabled={loading}
@@ -129,6 +190,14 @@ export default function AdminProductsPage() {
                     <table className={styles.table}>
                         <thead className={styles.thead}>
                             <tr className={styles.tr}>
+                                <th className={styles.th} style={{ width: '40px' }}>
+                                    <input
+                                        type="checkbox"
+                                        onChange={handleSelectAll}
+                                        checked={filteredProducts.length > 0 && selectedIds.size === filteredProducts.length}
+                                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                    />
+                                </th>
                                 <th className={styles.th}>Image</th>
                                 <th className={styles.th}>Name</th>
                                 <th className={styles.th}>Category</th>
@@ -139,7 +208,15 @@ export default function AdminProductsPage() {
                         </thead>
                         <tbody>
                             {filteredProducts.map((product) => (
-                                <tr key={product._id} className={styles.tr}>
+                                <tr key={product._id} className={styles.tr} style={{ background: selectedIds.has(product._id) ? 'rgba(255, 107, 0, 0.05)' : 'transparent' }}>
+                                    <td className={styles.td}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.has(product._id)}
+                                            onChange={() => handleSelectOne(product._id)}
+                                            style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                        />
+                                    </td>
                                     <td className={styles.td}>
                                         <div style={{ width: '40px', height: '40px', background: '#333', borderRadius: '4px', overflow: 'hidden' }}>
                                             {/* Use placeholder if image is relative path or missing */}
@@ -174,7 +251,7 @@ export default function AdminProductsPage() {
                                             </button>
                                         </Link>
                                         <button
-                                            onClick={() => handleDelete(product._id)}
+                                            onClick={() => handleDelete([product._id])}
                                             style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}
                                             title="Delete"
                                         >

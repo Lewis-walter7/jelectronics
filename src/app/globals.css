@@ -36,7 +36,7 @@
   --font-display: 'Outfit', sans-serif;
 }
 
-[data-theme='dark'] {
+[data-theme='dark'], .dark {
   --color-primary: hsl(var(--primary-hue), var(--primary-sat), var(--primary-light));
   --color-primary-dark: hsl(var(--primary-hue), var(--primary-sat), 30%);
   --color-primary-glow: hsla(var(--primary-hue), var(--primary-sat), var(--primary-light), 0.5);
@@ -50,6 +50,18 @@
   
   --color-success: #00e676;
   --color-error: #ff3d00;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 html, body {

@@ -10,6 +10,11 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a description for this product.'],
     },
+    youtubeUrl: {
+        type: String,
+        required: false,
+        default: null,
+    },
     price: {
         type: Number,
         required: [true, 'Please provide a price.'],
@@ -53,6 +58,25 @@ const ProductSchema = new mongoose.Schema({
         price: Number,
         salePrice: Number,
         stock: { type: Number, default: 0 }
+    }],
+    storageVariants: [{
+        name: String,
+        price: Number,
+        salePrice: Number,
+        stock: { type: Number, default: 0 },
+        isDisabled: { type: Boolean, default: false }
+    }],
+    warrantyVariants: [{
+        name: String,
+        price: { type: Number, default: 0 },
+        stock: { type: Number, default: 0 },
+        isDisabled: { type: Boolean, default: false }
+    }],
+    simVariants: [{
+        name: String,
+        price: { type: Number, default: 0 },
+        stock: { type: Number, default: 0 },
+        isDisabled: { type: Boolean, default: false }
     }],
     colors: {
         type: [String], // e.g., ["Black", "White"]

@@ -10,10 +10,9 @@ interface FeatureObj {
 }
 
 const PHONE_VARIANTS = [
-    "4/64GB", "4/128GB",
+    "4/32GB", "4/64GB", "4/128GB",
     "6/128GB",
     "8/128GB", "8/256GB",
-    "12/256GB", "12/512GB",
     "12/256GB", "12/512GB",
     "16/512GB", "16/1TB", "16/2TB"
 ];
@@ -48,6 +47,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         maxPrice: '',
         category: 'Phones',
         subcategory: '',
+        youtubeUrl: '',
         description: '',
         stock: '',
         image: '',
@@ -70,8 +70,16 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     const [salePrice, setSalePrice] = useState('');
     const [colors, setColors] = useState<string[]>([]);
     const [colorInput, setColorInput] = useState('');
+    // Variants State
     const [hasVariants, setHasVariants] = useState(false);
-    const [variants, setVariants] = useState<{ name: string; price: string; stock: string }[]>([]);
+    const [hasStorageVariants, setHasStorageVariants] = useState(false);
+    const [storageVariants, setStorageVariants] = useState<{ name: string; price: string; stock: string }[]>([]);
+
+    const [hasWarrantyVariants, setHasWarrantyVariants] = useState(false);
+    const [warrantyVariants, setWarrantyVariants] = useState<{ name: string; price: string; stock: string }[]>([]);
+
+    const [hasSimVariants, setHasSimVariants] = useState(false);
+    const [simVariants, setSimVariants] = useState<{ name: string; price: string; stock: string }[]>([]);
     const [status, setStatus] = useState<'published' | 'draft'>('published');
 
     // Fetch Product Data
@@ -91,6 +99,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         maxPrice: p.maxPrice ? p.maxPrice.toString() : '',
                         category: p.category,
                         subcategory: p.subcategory || '',
+                        youtubeUrl: p.youtubeUrl || '',
                         description: p.description,
                         stock: p.stock,
                         image: p.imageUrl || p.image || '',
@@ -103,9 +112,30 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     setIsOnSpecialOffer(p.isOnSpecialOffer || false);
                     setSalePrice(p.salePrice ? p.salePrice.toString() : '');
 
-                    if (p.variants && p.variants.length > 0) {
+                    if (p.storageVariants && p.storageVariants.length > 0) {
                         setHasVariants(true);
-                        setVariants(p.variants.map((v: any) => ({
+                        setHasStorageVariants(true);
+                        setStorageVariants(p.storageVariants.map((v: any) => ({
+                            name: v.name,
+                            price: v.price.toString(),
+                            stock: v.stock.toString()
+                        })));
+                    }
+
+                    if (p.warrantyVariants && p.warrantyVariants.length > 0) {
+                        setHasVariants(true);
+                        setHasWarrantyVariants(true);
+                        setWarrantyVariants(p.warrantyVariants.map((v: any) => ({
+                            name: v.name,
+                            price: v.price.toString(),
+                            stock: v.stock.toString()
+                        })));
+                    }
+
+                    if (p.simVariants && p.simVariants.length > 0) {
+                        setHasVariants(true);
+                        setHasSimVariants(true);
+                        setSimVariants(p.simVariants.map((v: any) => ({
                             name: v.name,
                             price: v.price.toString(),
                             stock: v.stock.toString()
@@ -347,19 +377,32 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         setColors(colors.filter(c => c !== colorToRemove));
     };
 
-    // Variant Helpers
-    const handleAddVariant = () => {
-        setVariants([...variants, { name: '', price: '', stock: '' }]);
+    // Generic Variant Helpers
+    const handleAddVariant = (
+        list: { name: string; price: string; stock: string }[],
+        setList: (l: { name: string; price: string; stock: string }[]) => void
+    ) => {
+        setList([...list, { name: '', price: '', stock: '' }]);
     };
 
-    const handleRemoveVariant = (index: number) => {
-        setVariants(variants.filter((_, i) => i !== index));
+    const handleRemoveVariant = (
+        list: { name: string; price: string; stock: string }[],
+        setList: (l: { name: string; price: string; stock: string }[]) => void,
+        index: number
+    ) => {
+        setList(list.filter((_, i) => i !== index));
     };
 
-    const handleVariantChange = (index: number, field: 'name' | 'price' | 'stock', value: string) => {
-        const newVariants = [...variants];
-        newVariants[index][field] = value;
-        setVariants(newVariants);
+    const handleVariantChange = (
+        list: { name: string; price: string; stock: string }[],
+        setList: (l: { name: string; price: string; stock: string }[]) => void,
+        index: number,
+        field: 'name' | 'price' | 'stock',
+        value: string
+    ) => {
+        const newList = [...list];
+        newList[index][field] = value;
+        setList(newList);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -397,7 +440,18 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 salePrice: isOnSpecialOffer && salePrice ? Number(salePrice) : null,
                 discountPercentage,
                 colors,
-                variants: hasVariants ? variants.map(v => ({
+                variants: [],
+                storageVariants: (hasVariants && hasStorageVariants) ? storageVariants.map(v => ({
+                    name: v.name,
+                    price: Number(v.price) || 0,
+                    stock: Number(v.stock) || 0
+                })) : [],
+                warrantyVariants: (hasVariants && hasWarrantyVariants) ? warrantyVariants.map(v => ({
+                    name: v.name,
+                    price: Number(v.price) || 0,
+                    stock: Number(v.stock) || 0
+                })) : [],
+                simVariants: (hasVariants && hasSimVariants) ? simVariants.map(v => ({
                     name: v.name,
                     price: Number(v.price) || 0,
                     stock: Number(v.stock) || 0
@@ -577,6 +631,73 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         );
     };
 
+    const renderVariantSection = (
+        title: string,
+        enabled: boolean,
+        setEnabled: (b: boolean) => void,
+        list: { name: string; price: string; stock: string }[],
+        setList: (l: { name: string; price: string; stock: string }[]) => void,
+        placeholderName: string
+    ) => (
+        <div style={{ marginTop: '2rem', borderTop: '1px solid #222', paddingTop: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <label style={{ ...labelStyle, marginTop: 0 }}>{title}</label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: enabled ? '#ff6b00' : '#888' }}>
+                    <input
+                        type="checkbox"
+                        checked={enabled}
+                        onChange={(e) => setEnabled(e.target.checked)}
+                    />
+                    Enable {title}
+                </label>
+            </div>
+
+            {enabled && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {list.map((v, i) => (
+                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr auto', gap: '10px', alignItems: 'center' }}>
+                            <input
+                                placeholder={placeholderName}
+                                value={v.name}
+                                onChange={(e) => handleVariantChange(list, setList, i, 'name', e.target.value)}
+                                list={title.includes('Storage') ? "phone-variants" : undefined}
+                                style={{ ...inputStyle, marginTop: 0 }}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Price"
+                                value={v.price}
+                                onChange={(e) => handleVariantChange(list, setList, i, 'price', e.target.value)}
+                                style={{ ...inputStyle, marginTop: 0 }}
+                            />
+                            <input
+                                type="number"
+                                placeholder="Stock"
+                                value={v.stock}
+                                onChange={(e) => handleVariantChange(list, setList, i, 'stock', e.target.value)}
+                                style={{ ...inputStyle, marginTop: 0 }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveVariant(list, setList, i)}
+                                style={{ background: '#333', color: 'white', border: 'none', width: '30px', height: '30px', borderRadius: '4px', cursor: 'pointer' }}
+                            >
+                                ×
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={() => handleAddVariant(list, setList)}
+                        style={{ background: 'transparent', border: '1px dashed #444', color: '#aaa', padding: '10px', width: '100%', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                        + Add {title} Item
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+
     if (fetching) {
         return <div style={{ padding: '2rem', color: 'white' }}>Loading product details...</div>;
     }
@@ -707,6 +828,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <option value="Other">Other</option>
                 </select>
 
+                <label style={labelStyle}>YouTube Video URL (Optional)</label>
+                <input
+                    name="youtubeUrl"
+                    value={formData.youtubeUrl}
+                    placeholder="e.g. https://www.youtube.com/watch?v=..."
+                    style={inputStyle}
+                    onChange={handleChange}
+                />
+
                 <label style={labelStyle}>Description</label>
                 <textarea name="description" value={formData.description} rows={4} style={inputStyle} onChange={handleChange} />
 
@@ -728,7 +858,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     />
                 </div>
 
-                {/* Variants Section */}
+                {/* Product Variants Wrapper */}
                 <div style={{ marginTop: '2rem', borderTop: '1px solid #222', paddingTop: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                         <label style={{ ...labelStyle, marginTop: 0 }}>Product Variants</label>
@@ -743,46 +873,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     </div>
 
                     {hasVariants && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            {variants.map((v, i) => (
-                                <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr auto', gap: '10px', alignItems: 'center' }}>
-                                    <input
-                                        placeholder="Name (e.g. 256GB)"
-                                        value={v.name}
-                                        onChange={(e) => handleVariantChange(i, 'name', e.target.value)}
-                                        list={formData.category === 'Phones' ? "phone-variants" : undefined}
-                                        style={{ ...inputStyle, marginTop: 0 }}
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Price"
-                                        value={v.price}
-                                        onChange={(e) => handleVariantChange(i, 'price', e.target.value)}
-                                        style={{ ...inputStyle, marginTop: 0 }}
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Stock"
-                                        value={v.stock}
-                                        onChange={(e) => handleVariantChange(i, 'stock', e.target.value)}
-                                        style={{ ...inputStyle, marginTop: 0 }}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveVariant(i)}
-                                        style={{ background: '#333', color: 'white', border: 'none', width: '30px', height: '30px', borderRadius: '4px', cursor: 'pointer' }}
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={handleAddVariant}
-                                style={{ background: 'transparent', border: '1px dashed #444', color: '#aaa', padding: '10px', width: '100%', borderRadius: '6px', cursor: 'pointer' }}
-                            >
-                                + Add Variant
-                            </button>
+                        <div style={{ marginLeft: '1rem', borderLeft: '1px solid #333', paddingLeft: '1rem' }}>
+                            {/* Storage Variants */}
+                            {renderVariantSection('Storage Variants', hasStorageVariants, setHasStorageVariants, storageVariants, setStorageVariants, 'Size (e.g. 128GB)')}
+
+                            {/* Warranty Variants */}
+                            {renderVariantSection('Warranty Options', hasWarrantyVariants, setHasWarrantyVariants, warrantyVariants, setWarrantyVariants, 'Duration (e.g. 1 Year)')}
+
+                            {/* SIM Variants */}
+                            {renderVariantSection('SIM Options', hasSimVariants, setHasSimVariants, simVariants, setSimVariants, 'Type (e.g. Dual SIM)')}
                         </div>
                     )}
                 </div>

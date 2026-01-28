@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useTheme } from '@/context/ThemeContext';
+
 
 interface PaginationProps {
     currentPage: number;
@@ -13,8 +13,6 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const { theme } = useTheme(); // To reuse theming if needed, though we'll use CSS vars
-
     const createPageURL = (pageNumber: number | string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', pageNumber.toString());
@@ -22,8 +20,6 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
     };
 
     if (totalPages <= 1) return null;
-
-    const isLight = theme === 'light';
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem', gap: '0.5rem' }}>

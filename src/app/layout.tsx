@@ -1,7 +1,7 @@
 import { Inter, Outfit } from 'next/font/google';
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider } from '@/context/ThemeContext';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-main' });
@@ -50,7 +50,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${outfit.variable}`} suppressHydrationWarning>
-        <ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <Toaster
             position="bottom-right"
             toastOptions={{
