@@ -121,14 +121,79 @@ const ProductSchema = new mongoose.Schema({
         type: Object,
         default: {}
     },
-    bundledProducts: [{
+    frequentlyBoughtTogether: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
     }],
     bundleDiscount: {
         type: Number,
         default: 5
+    },
+    slug: {
+        type: String,
+        unique: true,
+        sparse: true
     }
 }, { timestamps: true });
+
+// Pre-save hook to generate slug and calculate min/max prices
+ProductSchema.pre('save', async function () {
+    // 1. Slug generation
+    if (!this.slug || this.isModified('name')) {
+        let slug = this.name.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        if (this._id) {
+            slug = `${slug}-${this._id}`;
+        }
+        this.slug = slug;
+    }
+
+    // 2. Min/Max Price Calculation based on Dynamic Logic
+    // Logic: Max(StoragePrice, WarrantyPrice, basePrice) + SIM
+    const basePrice = (this as any).price || 0;
+
+    // Get all possible storage prices (include basePrice as a fallback if no storage variants)
+    const storagePrices = (this as any).storageVariants && (this as any).storageVariants.length > 0
+        ? (this as any).storageVariants.filter((v: any) => !v.isDisabled).map((v: any) => (v.salePrice && v.salePrice > 0) ? v.salePrice : (v.price || 0))
+        : [basePrice];
+
+    // Get all possible warranty prices (include basePrice as a fallback)
+    const warrantyPrices = (this as any).warrantyVariants && (this as any).warrantyVariants.length > 0
+        ? (this as any).warrantyVariants.filter((v: any) => !v.isDisabled).map((v: any) => (v.salePrice && v.salePrice > 0) ? v.salePrice : (v.price || 0))
+        : [basePrice];
+
+    // Get all possible SIM additions (0 if none)
+    const simAddons = (this as any).simVariants && (this as any).simVariants.length > 0
+        ? (this as any).simVariants.filter((v: any) => !v.isDisabled).map((v: any) => (v.salePrice && v.salePrice > 0) ? v.salePrice : (v.price || 0))
+        : [0];
+
+    // Calculate all possible combined base prices (Max of Storage vs Warranty)
+    const combinedBases: number[] = [];
+    storagePrices.forEach((s: number) => {
+        warrantyPrices.forEach((w: number) => {
+            // Take the max of storage and warranty prices. 
+            // Also compare with basePrice to be safe if variants are small increments (though they seem absolute)
+            combinedBases.push(Math.max(s, w, basePrice));
+        });
+    });
+
+    // Calculate all possible final totals
+    const allTotals: number[] = [];
+    combinedBases.forEach(cb => {
+        simAddons.forEach((sim: number) => {
+            allTotals.push(cb + sim);
+        });
+    });
+
+    if (allTotals.length > 0) {
+        (this as any).minPrice = Math.min(...allTotals);
+        (this as any).maxPrice = Math.max(...allTotals);
+    } else {
+        (this as any).minPrice = basePrice;
+        (this as any).maxPrice = basePrice;
+    }
+});
 
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);

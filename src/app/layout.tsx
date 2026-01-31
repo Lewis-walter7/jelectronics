@@ -14,7 +14,13 @@ export const metadata: Metadata = {
     template: '%s | MobiTower Accessories'
   },
   description: 'Shop the best premium electronics in Kenya. Smartphones, Laptops, Accessories and more. Fast delivery and M-Pesa payment available.',
-  keywords: ['Electronics', 'Kenya', 'Smartphones', 'Laptops', 'Headphones', 'MobiTower', 'Accessories', 'Samsung', 'Apple'],
+  keywords: [
+    'Electronics', 'Kenya', 'Smartphones', 'Laptops', 'Headphones', 'MobiTower', 'Accessories', 'Samsung', 'Apple',
+    'iPhone Price in Kenya', 'Samsung Phones Kenya', 'HP Laptops Kenya', 'Dell Laptops', 'Lenovo', 'MacBook',
+    'JBL Speakers', 'Smartwatches', 'Gaming Consoles', 'PS5 Kenya', 'Xbox',
+    'Phone Accessories', 'Chargers', 'Cables', 'Screen Protectors', 'Cases',
+    'Buy Online', 'M-Pesa Payment', 'Fast Delivery Nairobi', 'Original Products'
+  ],
   openGraph: {
     title: 'MobiTower Accessories | Premium Electronics Store',
     description: 'Shop the best premium electronics in Kenya. Smartphones, Laptops, Accessories and more.',

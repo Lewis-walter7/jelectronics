@@ -2,6 +2,7 @@ import dns from 'node:dns';
 
 // Force IP family 4 for all DNS lookups to avoid IPv6 timeouts
 const originalLookup = dns.lookup;
+const originalResolveSrv = dns.resolveSrv;
 
 // Force Google Public DNS to resolve SRV record issues (ECONNREFUSED on localhost)
 try {
@@ -31,4 +32,21 @@ dns.lookup = (hostname, options, callback) => {
     return originalLookup(hostname, options, callback);
 };
 
-console.log('✅ [DNS Patch] IPv4 Only Mode Enabled (Global)');
+// Retry logic for SRV records
+// @ts-ignore
+dns.resolveSrv = (hostname, callback) => {
+    // @ts-ignore
+    originalResolveSrv(hostname, (err, addresses) => {
+        if (err && (err.code === 'ECONNREFUSED' || err.code === 'SERVFAIL')) {
+            console.warn(`⚠️ [DNS Patch] Retrying SRV lookup for ${hostname}...`);
+            setTimeout(() => {
+                // @ts-ignore
+                originalResolveSrv(hostname, callback);
+            }, 500); // Short delay retry
+        } else {
+            callback(err, addresses);
+        }
+    });
+};
+
+console.log('✅ [DNS Patch] IPv4 Only Mode & SRV Retry Enabled (Global)');

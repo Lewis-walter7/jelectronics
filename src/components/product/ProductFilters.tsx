@@ -35,7 +35,7 @@ export default function ProductFilters() {
     const categoryConfig: Record<string, { label: string; key: string; options: string[]; singleSelect?: boolean }[]> = {
         'phones': [
             { label: 'Storage', key: 'storage', options: storageOptions },
-            { label: 'RAM', key: 'ram', options: ['4GB', '6GB', '8GB', '12GB', '16GB'] }
+            { label: 'RAM', key: 'ram', options: ['4GB', '6GB', '8GB', '12GB', '16GB', '24GB'] }
         ],
         'tablets': [
             { label: 'Storage', key: 'storage', options: storageOptions },
@@ -50,13 +50,23 @@ export default function ProductFilters() {
             { label: 'Platform', key: 'platform', options: ['PlayStation 5', 'Xbox Series X', 'Nintendo Switch', 'PC'] },
             { label: 'Type', key: 'gameType', options: ['Console', 'Accessory', 'Game'] }
         ],
+        'computers': [
+            { label: 'Type', key: 'type', options: ['Laptops', 'Desktops', 'Printers', 'iMacs', 'MacBooks', 'Mac Minis', 'Mac Pros', 'Mac Studio'], singleSelect: true },
+            { label: 'Processor', key: 'processor', options: ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9', 'AMD Ryzen 5', 'AMD Ryzen 7', 'Apple M1', 'Apple M2', 'Apple M3'] },
+            { label: 'RAM', key: 'ram', options: ['8GB', '16GB', '32GB', '64GB'] },
+            { label: 'Storage', key: 'storage', options: ['256GB SSD', '512GB SSD', '1TB SSD', '2TB SSD'] }
+        ],
+        'tvs': [
+            { label: 'Type', key: 'type', options: ['Android TVs', 'Smart TVs', 'LED TVs', 'QLED TVs', 'OLED TVs', '4K TVs', '8K TVs'], singleSelect: true },
+            { label: 'Screen Size', key: 'screenSize', options: ['32"', '40"', '43"', '50"', '55"', '65"', '75"', '85"+'] }
+        ],
         'wearables': [
             { label: 'Type', key: 'wearableType', options: ['Smartwatch', 'Fitness Tracker', 'Band'] },
             { label: 'Strap Material', key: 'strap', options: ['Silicone', 'Leather', 'Metal', 'Nylon'] }
         ],
         'storage': [
             { label: 'Type', key: 'type', options: ['Hard Disks', 'SSD', 'Flash Drives', 'Memory Cards'], singleSelect: true },
-            { label: 'Capacity', key: 'storage', options: ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB', '4TB'] }
+            { label: 'Capacity', key: 'storage', options: ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB', '4TB', '8TB'] }
         ],
         'accessories': [
             { label: 'Subcategory', key: 'type', options: ['Chargers', 'Powerbanks', 'Cables', 'Screen Protectors', 'Phone Covers', 'Streamers', 'Flash Drives', 'Gimbals', 'Hard Disks', 'Memory Cards', 'Modems', 'Mouse'] }

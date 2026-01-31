@@ -18,25 +18,123 @@
 
 .imageWrapper {
     height: 200px;
-    background: transparent;
+    background: white;
+    /* Often better for product images if they have white backgrounds */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Quick View Button */
+.quickViewBtn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: white;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 20;
+}
+
+.card:hover .quickViewBtn {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+@media (max-width: 768px) {
+    .quickViewBtn {
+        display: none !important;
+    }
+}
+
+.imageTrack {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.imageSlide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.image {
+    object-fit: cover;
+    padding: 0;
+}
+
+.card:hover .imageSlide .image {
+    transform: scale(1.05);
+}
+
+.navBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    padding: 0;
-    /* Removed padding */
-    position: relative;
-    border-bottom: 1px solid var(--color-surface-hover);
-    /* Optional: adds separation if image has white background */
+    cursor: pointer;
+    z-index: 5;
+    opacity: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Ensure image scales nicely within the transparent box */
-.imageWrapper img {
-    transition: transform 0.3s ease;
+.prevBtn {
+    left: 8px;
 }
 
-.card:hover .imageWrapper img {
-    transform: scale(1.1);
+.nextBtn {
+    right: 8px;
+}
+
+.card:hover .navBtn {
+    opacity: 1;
+}
+
+.navBtn:hover {
+    background: white;
+    color: var(--color-primary);
+}
+
+.indicators {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.activeDot {
+    background: #2563eb;
+    /* Blue color from sample */
+    transform: scale(1.2);
 }
 
 .badge {
@@ -165,5 +263,25 @@
 
     .price {
         font-size: 1.1rem;
+    }
+
+    .navBtn {
+        opacity: 0.7;
+        width: 28px;
+        height: 28px;
+    }
+
+    .indicators {
+        bottom: 6px;
+        padding: 3px 6px;
+    }
+
+    .dot {
+        width: 4px;
+        height: 4px;
+    }
+
+    .activeDot {
+        width: 8px;
     }
 }

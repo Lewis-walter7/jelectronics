@@ -74,13 +74,13 @@ export default function Hero() {
         },
         {
             name: 'Storage',
-            slug: 'accessories',
+            slug: 'storage',
             image: '/drive.webp',
             subCategories: [
-                { name: 'Flash Drives', slug: 'accessories?type=flashdrives' },
-                { name: 'Hard Drives', slug: 'accessories?type=harddisks' },
-                { name: 'Memory Cards', slug: 'accessories?type=memorycards' },
-                { name: 'USB Hubs', slug: 'accessories?type=usbhubs' },
+                { name: 'Flash Drives', slug: 'storage?type=flashdrives' },
+                { name: 'Hard Drives', slug: 'storage?type=harddisks' },
+                { name: 'Memory Cards', slug: 'storage?type=memorycards' },
+                { name: 'USB Hubs', slug: 'storage?type=usbhubs' },
             ]
         },
     ];

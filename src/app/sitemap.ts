@@ -22,10 +22,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     try {
         await connectToDatabase();
-        const products = await Product.find({}).select('name category updatedAt _id').lean();
+        const products = await Product.find({}).select('name category slug updatedAt').lean();
 
         const productRoutes = products.map((product: any) => {
-            const slug = `${product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${product._id}`;
+            const slug = product.slug || `${product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${product._id}`;
             return {
                 url: `${baseUrl}/products/${product.category}/${slug}`,
                 lastModified: product.updatedAt || new Date(),

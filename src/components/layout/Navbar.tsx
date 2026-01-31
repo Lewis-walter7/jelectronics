@@ -95,6 +95,35 @@ export default function Navbar() {
             ]
         },
         {
+            name: 'Computers',
+            slug: 'computers',
+            subItems: [
+                { name: 'Laptops', slug: 'computers?type=laptops' },
+                { name: 'Desktops', slug: 'computers?type=desktops' },
+                { name: 'Printers', slug: 'computers?type=printers' },
+                { name: 'iMacs', slug: 'computers?type=imacs' },
+                { name: 'MacBooks', slug: 'computers?type=macbooks' },
+                { name: 'Mac Minis', slug: 'computers?type=macminis' },
+                { name: 'Mac Pros', slug: 'computers?type=macpros' },
+                { name: 'Mac Studio', slug: 'computers?type=macstudio' },
+                { name: 'Mac Pro', slug: 'computers?type=macpro' },
+            ]
+        },
+        {
+            name: 'TVs',
+            slug: 'tvs',
+            subItems: [
+                { name: 'Android TVs', slug: 'tvs?type=android' },
+                { name: 'Smart TVs', slug: 'tvs?type=smart' },
+                { name: 'LED TVs', slug: 'tvs?type=led' },
+                { name: 'QLED TVs', slug: 'tvs?type=qled' },
+                { name: 'OLED TVs', slug: 'tvs?type=oled' },
+                { name: '4K TVs', slug: 'tvs?type=4k' },
+                { name: '8K TVs', slug: 'tvs?type=8k' },
+                { name: 'TVs', slug: 'tvs?type=tvs' },
+            ]
+        },
+        {
             name: 'Wearables',
             slug: 'wearables',
             subItems: [

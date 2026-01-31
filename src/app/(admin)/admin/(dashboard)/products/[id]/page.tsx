@@ -26,8 +26,8 @@ const SUBCATEGORY_OPTIONS: Record<string, string[]> = {
     'Gaming': ['Console', 'Games', 'Accessories'],
     'Smartwatches': ['Apple Watch', 'Galaxy Watch', 'Fitness Tracker', 'Band'],
     'Accessories': ['Chargers', 'Powerbanks', 'Cables', 'Screen Protectors', 'Phone Covers', 'Gimbals', 'Memory Cards', 'Mouse', 'Modems'],
-    'TVs': ['Smart TV', 'Android TV', 'OLED', 'QLED'],
-    'Computing': ['Desktops', 'Monitors', 'Printers', 'Networking'],
+    'TVs': ['Smart TV', 'Android TV', 'OLED', 'QLED', 'LED', '4K', '8K', 'TVs'],
+    'Computers': ['Desktops', 'Monitors', 'Printers', 'Networking', 'iMacs', 'MacBooks', 'Mac Minis', 'Mac Pros', 'Mac Studio', 'Mac Pro'],
     'Cameras': ['DSLR', 'Mirrorless', 'Action', 'Drones'],
     'Storage': ['Hard Disks', 'SSD', 'Flash Drives', 'Memory Cards'],
     'Networking': ['Routers', 'Switches', 'Access Points']

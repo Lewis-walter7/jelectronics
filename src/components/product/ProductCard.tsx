@@ -1,8 +1,10 @@
-'use client';
+'use client'
 
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './ProductCard.module.css';
+import QuickViewModal from './QuickViewModal';
 import StarRating from '../review/StarRating';
 import { useCart } from '@/context/CartContext';
 import { useCompare } from '@/context/CompareContext';
@@ -27,10 +29,41 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ _id, name, description, price, salePrice, imageUrl, category, slug, averageRating = 0, reviewCount = 0, minPrice = 0, maxPrice = 0, images = [] }: ProductCardProps) {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+
+    // Combine imageUrl and images array, filter out duplicates and empty strings
+    const allImages = Array.from(new Set([imageUrl, ...images])).filter(img => img && typeof img === 'string');
+    const hasMultipleImages = allImages.length > 1;
+
     const { addToCart } = useCart();
     const { compareList, addToCompare, removeFromCompare } = useCompare();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const router = useRouter();
+
+    const nextImage = useCallback((e?: React.MouseEvent) => {
+        if (e) e.preventDefault();
+        setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+    }, [allImages.length]);
+
+    const prevImage = useCallback((e?: React.MouseEvent) => {
+        if (e) e.preventDefault();
+        setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+    }, [allImages.length]);
+
+    useEffect(() => {
+        if (!hasMultipleImages) return;
+
+        const interval = setInterval(() => {
+            // Only slide if not being hovered by the user to maintain better UX
+            if (!isHovered) {
+                nextImage();
+            }
+        }, 3000); // 3 seconds interval
+
+        return () => clearInterval(interval);
+    }, [hasMultipleImages, isHovered, nextImage]);
 
     // Fallback slug generation if not provided
     const safeName = name || 'Product';
@@ -90,16 +123,63 @@ export default function ProductCard({ _id, name, description, price, salePrice, 
     };
 
     return (
-        <Link href={productLink} className={styles.card}>
+        <Link
+            href={productLink}
+            className={styles.card}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
             <div className={styles.imageWrapper}>
-                <Image
-                    src={imageUrl || images[0]}
-                    alt={name}
-                    fill
-                    className={styles.image}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
+                <div
+                    className={styles.imageTrack}
+                    style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                >
+                    {allImages.map((img, index) => (
+                        <div key={index} className={styles.imageSlide}>
+                            <Image
+                                src={img}
+                                alt={`${name} - Image ${index + 1}`}
+                                fill
+                                className={styles.image}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                priority={index === 0}
+                            />
+                        </div>
+                    ))}
+                </div>
+
                 {salePrice && <span className={styles.badge}>SALE</span>}
+
+                {hasMultipleImages && (
+                    <>
+                        <button
+                            className={`${styles.navBtn} ${styles.prevBtn}`}
+                            onClick={prevImage}
+                            aria-label="Previous image"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button
+                            className={`${styles.navBtn} ${styles.nextBtn}`}
+                            onClick={nextImage}
+                            aria-label="Next image"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                        <div className={styles.indicators}>
+                            {allImages.map((_, index) => (
+                                <span
+                                    key={index}
+                                    className={`${styles.dot} ${index === currentImageIndex ? styles.activeDot : ''}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setCurrentImageIndex(index);
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
 
                 <button
                     onClick={handleToggleCompare}
@@ -190,6 +270,30 @@ export default function ProductCard({ _id, name, description, price, salePrice, 
                     Add to Cart
                 </button>
             </div>
+
+            {/* Quick View Button - Desktop Only (controlled by CSS) */}
+            <button
+                className={styles.quickViewBtn}
+                onClick={(e) => {
+                    e.preventDefault(); // Prevent navigation
+                    setIsQuickViewOpen(true);
+                }}
+            >
+                Quick View
+            </button>
+
+            {/* Quick View Modal */}
+            {isQuickViewOpen && (
+                <QuickViewModal
+                    isOpen={isQuickViewOpen}
+                    onClose={() => setIsQuickViewOpen(false)}
+                    product={{
+                        _id, name, description, price, salePrice, imageUrl, category,
+                        slug: slug || _id,
+                        stock: 5 // Default or prop
+                    }}
+                />
+            )}
         </Link>
     );
 }

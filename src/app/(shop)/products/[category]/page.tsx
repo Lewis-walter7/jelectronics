@@ -2,6 +2,7 @@ import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
 import ProductList from '@/components/product/ProductList';
 import ProductFilters from '@/components/product/ProductFilters';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import Pagination from '@/components/ui/Pagination'; // Import Pagination
 import styles from '../products.module.css';
 
@@ -78,7 +79,8 @@ async function getProductsByCategory(category: string, filters: FilterParams) {
 
     // Dynamic Filters Mappings
     addFeatureFilter('ram', ['RAM', 'Ram', 'Memory']);
-    addFeatureFilter('screenSize', ['Screen Size', 'Display Size', 'Screen']);
+    addFeatureFilter('screenSize', ['Screen Size', 'Display Size', 'Screen', 'Size']);
+    addFeatureFilter('processor', ['Processor', 'CPU', 'Chipset']);
     addFeatureFilter('audioType', ['Type', 'Audio Type', 'Headphone Type']);
     addFeatureFilter('connectivity', ['Connectivity', 'Connection']);
     addFeatureFilter('platform', ['Platform', 'Console']);
@@ -192,6 +194,9 @@ export default async function CategoryPage({
 
     return (
         <div className={`container ${styles.pageContainer}`}>
+            <Breadcrumbs crumbs={[
+                { label: categoryName, href: `/products/${category}` }
+            ]} />
             <h1 className={styles.header}>{categoryName}</h1>
 
             <div className={styles.layoutGrid}>

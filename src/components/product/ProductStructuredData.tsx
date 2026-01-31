@@ -10,11 +10,17 @@ interface ProductStructuredDataProps {
         sku: string;
         brand?: string;
         availability: 'InStock' | 'OutOfStock';
+        url?: string;
+        priceValidUntil?: string;
+        aggregateRating?: {
+            ratingValue: number;
+            reviewCount: number;
+        };
     };
 }
 
 export default function ProductStructuredData({ product }: ProductStructuredDataProps) {
-    const jsonLd = {
+    const jsonLd: any = {
         '@context': 'https://schema.org',
         '@type': 'Product',
         name: product.name,
@@ -27,13 +33,22 @@ export default function ProductStructuredData({ product }: ProductStructuredData
         },
         offers: {
             '@type': 'Offer',
-            url: `https://mobitoweraccesories.com/products/item/${product.sku}`, // Adjust URL structure
+            url: product.url || `https://mobitoweraccesories.com/products/item/${product.sku}`,
             priceCurrency: product.currency,
             price: product.price,
             availability: product.availability === 'InStock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
+            priceValidUntil: product.priceValidUntil || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
         },
     };
+
+    if (product.aggregateRating && product.aggregateRating.reviewCount > 0) {
+        jsonLd.aggregateRating = {
+            '@type': 'AggregateRating',
+            ratingValue: product.aggregateRating.ratingValue,
+            reviewCount: product.aggregateRating.reviewCount,
+        };
+    }
 
     return (
         <Script

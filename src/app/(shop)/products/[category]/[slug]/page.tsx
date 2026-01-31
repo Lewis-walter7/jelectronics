@@ -8,9 +8,43 @@ import ReviewForm from '@/components/review/ReviewForm';
 import BundleDeals from '@/components/product/BundleDeals';
 import ProductStructuredData from '@/components/product/ProductStructuredData';
 import ImageGallery from '@/components/product/ImageGallery';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 import connectToDatabase from '@/lib/db';
 import Product from '@/models/Product';
+import Review from '@/models/Review';
+
+async function getReviewStats(productId: string) {
+    try {
+        await connectToDatabase();
+        // Only count approved reviews
+        const stats = await Review.aggregate([
+            { $match: { productId: productId as any, status: 'approved' } }, // Cast if needed for ObjectId match
+            // Note: If productId is string in Review model, remove match cast. 
+            // Based on model Review.ts: productId is ObjectId ref. We need to cast string to ObjectId?
+            // Mongoose aggregate often needs ObjectId casting if stored as ObjectId. 
+            // Ideally we import mongoose.Types.ObjectId.
+            // Let's rely on mongoose automatic casting or simple string match if user stores strings (User said productId is Ref ObjectId)
+            // SAFEST: Let's assume standard behavior. If this fails, we might need new mongoose.Types.ObjectId(productId)
+        ]);
+
+        // aggregate is complex with types in edge cases, let's use simple find for now to be safe and avoid Import issues with ObjectId
+        const reviews = await Review.find({ productId: productId, status: 'approved' }).select('rating').lean();
+
+        if (reviews.length === 0) return null;
+
+        const totalRating = reviews.reduce((acc: number, curr: any) => acc + curr.rating, 0);
+        const avgRating = totalRating / reviews.length;
+
+        return {
+            ratingValue: parseFloat(avgRating.toFixed(1)),
+            reviewCount: reviews.length
+        };
+    } catch (error) {
+        console.error('Error fetching review stats:', error);
+        return null;
+    }
+}
 
 async function getProductBySlug(slug: string) {
     try {
@@ -48,6 +82,19 @@ async function getProductBySlug(slug: string) {
                 ...v,
                 _id: v._id ? v._id.toString() : undefined
             })),
+            storageVariants: (product.storageVariants || []).map((v: any) => ({
+                ...v,
+                _id: v._id ? v._id.toString() : undefined
+            })),
+            warrantyVariants: (product.warrantyVariants || []).map((v: any) => ({
+                ...v,
+                _id: v._id ? v._id.toString() : undefined
+            })),
+            simVariants: (product.simVariants || []).map((v: any) => ({
+                ...v,
+                _id: v._id ? v._id.toString() : undefined
+            })),
+            frequentlyBoughtTogether: (product.frequentlyBoughtTogether || []).map((id: any) => id.toString()),
             bundledProducts: bundledItems.map((bp: any) => ({
                 _id: bp._id.toString(),
                 name: bp.name,
@@ -64,8 +111,8 @@ async function getProductBySlug(slug: string) {
     }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-    const { slug } = await params;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string, category: string }> }): Promise<Metadata> {
+    const { slug, category } = await params;
     const product = await getProductBySlug(slug);
 
     if (!product) {
@@ -74,20 +121,61 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
 
+    const title = `${product.name} | MobiTower Accessories`;
+    const description = product.description.substring(0, 160);
+    const url = `https://mobitoweraccesories.com/products/${category}/${slug}`;
+
+    // Enhanced keywords generation
+    const baseKeywords = [
+        product.name,
+        product.brand,
+        product.category,
+        product.subcategory,
+        `${product.name} Price in Kenya`,
+        `${product.name} Specs`,
+        `${product.name} Review`,
+        `Buy ${product.name} Online`,
+        `${product.brand} ${product.category}`,
+        'electronics',
+        'Kenya',
+        'MobiTower'
+    ];
+    const keywords = baseKeywords.filter(Boolean).join(', ');
+
     return {
-        title: product.name,
-        description: product.description.substring(0, 160), // SEO friendly truncation
-        openGraph: {
-            title: product.name,
-            description: product.description.substring(0, 160),
-            images: [product.imageUrl || product.image],
-            type: 'website',
+        title: title,
+        description: description,
+        keywords: keywords,
+        alternates: {
+            canonical: url,
         },
+        openGraph: {
+            title: title,
+            description: description,
+            url: url,
+            siteName: 'MobiTower Accessories',
+            images: [
+                {
+                    url: product.imageUrl || product.image,
+                    width: 800,
+                    height: 600,
+                    alt: product.name,
+                }
+            ],
+            type: 'website',
+            locale: 'en_KE',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: title,
+            description: description,
+            images: [product.imageUrl || product.image],
+        }
     };
 }
 
-export default async function SEOProductPage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
+export default async function SEOProductPage({ params }: { params: Promise<{ slug: string, category: string }> }) {
+    const { slug, category } = await params;
     const product = await getProductBySlug(slug);
 
     if (!product) {
@@ -99,8 +187,11 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
         );
     }
 
+    const reviewStats = await getReviewStats(product.id);
+
     const displayProduct = product;
     const displayFeatures = displayProduct.features ? Object.entries(displayProduct.features) : [];
+    const pageUrl = `https://mobitoweraccesories.com/products/${category}/${slug}`;
 
     return (
         <>
@@ -112,8 +203,17 @@ export default async function SEOProductPage({ params }: { params: Promise<{ slu
                 currency: 'KES',
                 sku: displayProduct.id,
                 brand: displayProduct.brand,
-                availability: displayProduct.stock > 0 ? 'InStock' : 'OutOfStock'
+                availability: displayProduct.stock > 0 ? 'InStock' : 'OutOfStock',
+                url: pageUrl,
+                aggregateRating: reviewStats || undefined
             }} />
+
+            <div className="container">
+                <Breadcrumbs crumbs={[
+                    { label: category.charAt(0).toUpperCase() + category.slice(1), href: `/products/${category}` },
+                    { label: displayProduct.name, href: pageUrl }
+                ]} />
+            </div>
 
             <div className={`container ${styles.wrapper}`}>
                 <div className={styles.imageSection}>
